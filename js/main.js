@@ -110,19 +110,29 @@
                 headerH = header.clientHeight,
                 titles = $('#post-content').querySelectorAll('h1, h2, h3, h4, h5, h6');
 
-            toc.querySelector('a[href="#' + titles[0].id + '"]').parentNode.classList.add('active');
+            /**
+             * Safely find a toc link by heading id, return null if not found
+             */
+            function tocLink(id) {
+                if (!id) return null;
+                return toc.querySelector('a[href="#' + id + '"]');
+            }
+
+            var firstLink = tocLink(titles[0].id);
+            if (firstLink) {
+                firstLink.parentNode.classList.add('active');
+
+                var firstChild = firstLink.nextElementSibling;
+                if (firstChild) {
+                    firstChild.classList.add('post-toc-expand');
+                    firstChild.classList.remove('post-toc-shrink');
+                }
+            }
 
             // Make every child shrink initially
             var tocChilds = toc.querySelectorAll('.post-toc-child');
             for (i = 0, len = tocChilds.length; i < len; i++) {
                 tocChilds[i].classList.add('post-toc-shrink');
-            }
-            var firstChild =
-                toc.querySelector('a[href="#' + titles[0].id + '"]')
-                    .nextElementSibling;
-            if (firstChild) {
-                firstChild.classList.add('post-toc-expand');
-                firstChild.classList.remove('post-toc-shrink');
             }
             toc.classList.remove('post-toc-shrink');
 
@@ -132,8 +142,9 @@
              * @param currEle current active li element
              */
             var handleTocActive = function (prevEle, currEle) {
-                prevEle.classList.remove('active');
-                currEle.classList.add('active');
+                if (prevEle) prevEle.classList.remove('active');
+                if (currEle) currEle.classList.add('active');
+                if (!currEle) return;
 
                 var siblingChilds = currEle.parentElement.querySelectorAll('.post-toc-child');
                 for (j = 0, len1 = siblingChilds.length; j < len1; j++) {
@@ -155,17 +166,21 @@
                     for (i = 0, len = titles.length; i < len; i++) {
                         if (top > offset(titles[i]).y - headerH - 5) {
                             var prevListEle = toc.querySelector('li.active');
-                            var currListEle = toc.querySelector('a[href="#' + titles[i].id + '"]').parentNode;
-
-                            handleTocActive(prevListEle, currListEle);
+                            var currLink = tocLink(titles[i].id);
+                            if (currLink) {
+                                handleTocActive(prevListEle, currLink.parentNode);
+                            }
                         }
                     }
 
                     if (top < offset(titles[0]).y) {
-                        handleTocActive(
-                            toc.querySelector('li.active'),
-                            toc.querySelector('a[href="#' + titles[0].id + '"]').parentNode
-                        );
+                        var firstLink = tocLink(titles[0].id);
+                        if (firstLink) {
+                            handleTocActive(
+                                toc.querySelector('li.active'),
+                                firstLink.parentNode
+                            );
+                        }
                     }
                 }
             }
