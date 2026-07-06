@@ -1,207 +1,588 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  
-  
-  <title>Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="John Doe">
-<meta name="twitter:card" content="summary">
-  
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="shortcut icon" href="/favicon.png">
-  
-  
-  
-<link rel="stylesheet" href="/css/style.css">
-
-  
     
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
 
-  
-  
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+    
 
-<meta name="generator" content="Hexo 8.1.2"></head>
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>Fanchuanhaha&#39;s Blog | welcome to my blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="Fanchuanhaha&#39;s Blog">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="Fanchuanhaha&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Fanchuanhaha">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="Fanchuanhaha&#39;s Blog" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- theme: auto-follow OS / persisted preference (no manual toggle) -->
+    <script>
+    (function(){
+        try {
+            var KEY = 'indigo-theme';
+            var html = document.documentElement;
+            var apply = function(mode) {
+                if (mode === 'dark') html.classList.add('theme-dark');
+                else html.classList.remove('theme-dark');
+            };
+            var initial = localStorage.getItem(KEY);
+            if (initial === 'dark' || initial === 'light') {
+                apply(initial);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                apply('dark');
+            }
+            // Follow OS preference changes live (only when user has not set explicitly)
+            if (window.matchMedia) {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                var listener = function(e) {
+                    if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+                };
+                if (mq.addEventListener) mq.addEventListener('change', listener);
+                else if (mq.addListener) mq.addListener(listener);
+            }
+        } catch (e) {}
+    })();
+    </script>
+
+    <!-- safety: force-show content if main.js fails or resources hang (desktop keeps loading) -->
+    <script>
+    (function() {
+        var timer = setTimeout(function() {
+            var loading = document.getElementById('loading');
+            if (loading && loading.classList.contains('active')) {
+                loading.classList.remove('active');
+                document.querySelectorAll('.fade, .fade-scale').forEach(function(el) {
+                    el.classList.add('in');
+                });
+            }
+        }, 4000);
+        // Clear the timer if load event fires normally
+        window.addEventListener('load', function() { clearTimeout(timer); });
+    })();
+    </script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 7.3.0"></head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-        
-          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
-        
-        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu"  >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(http://corper.cn/view.php/b6c03b6f5e94c190cc221552f4524729.gif)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Fanchuanhaha</h5>
+          <a href="mailto:3098393078@qq.com" title="3098393078@qq.com" class="mail">3098393078@qq.com</a>
+        </hgroup>
       </div>
     </div>
-  </div>
-</header>
-
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/06/19/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2026-06-19T10:22:48.850Z" itemprop="datePublished">2026-06-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
         
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/06/19/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/06/19/hello-world/" data-id="cuid6EdOpCp8H6a6gVrj9IZUC" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-
-
-</section>
+            <li class="waves-block waves-effect active">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
         
-          <aside id="sidebar">
-  
-    
-
-  
-    
-
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">June 2026</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
         
-          <li>
-            <a href="/2026/06/19/hello-world/">Hello World</a>
-          </li>
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanchuanhaha" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://qm.qq.com/q/DTMDzZNZPa" target="_blank" >
+                <i class="icon icon-lg icon-qq"></i>
+                QQ群
+              </a>
+            </li>
         
       </ul>
     </div>
   </div>
-
-  
 </aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      
-      &copy; 2026 John Doe<br>
-      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
 
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Fanchuanhaha&#39;s Blog</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
     </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
+</header>
+<header class="content-header index-header" style="background: linear-gradient(rgba(63,81,181,0.55), rgba(63,81,181,0.55)), url(http://corper.cn/view.php/aaa7ffb2f2785400cd4007243b9a8cad.jpg) center center / cover no-repeat;">
+
+    <div class="container fade-scale">
+        <h1 class="title">Fanchuanhaha&#39;s Blog</h1>
+        <h5 class="subtitle">
+            
+                welcome to my blog
+            
+        </h5>
+    </div>
+
     
 
 
-<script src="/js/jquery-3.6.4.min.js"></script>
+</header>
 
+<div class="container body-wrap">
+
+    <ul class="post-list">
+    
+        <li class="post-list-item fade">
+            <article id="post-2026-05-04-mix-space-shiro安装教程"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2026-05-04 14:04:44" datetime="2026-05-04T06:04:44.637Z"  itemprop="datePublished">2026-05-04</time>
+
+        
+
+
+    </div>
+
+    
 
 
   
-<script src="/fancybox/jquery.fancybox.min.js"></script>
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">mix-space-shiro安装教程</a>
+    </h3>
+  
 
 
 
 
-<script src="/js/script.js"></script>
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        前言这真的就是给那个方法给你嚼碎了喂你的再看不懂我也没办法（到时候会出一期教程视频）参考资料
+https://mx-space.js.org/docs/core
+https://blog.xp6.top/posts/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/91
+首先你需要有一台云服务器，这里我推荐“狐蒂云”
+注册链接：https://www.szhdy.co...
+    
+
+        <a href="/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-2026-04-26-云服务器强制安装windows"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2026-04-26 13:27:47" datetime="2026-04-26T05:27:47.075Z"  itemprop="datePublished">2026-04-26</time>
+
+        
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/">云服务器强制安装windows</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        前言ps:语文太好了写出来的东西不堪入目全是然后...什么什么的，让ai优化了一下
+这算是一片如何在不支持windows安装的云服务器上安装windows的教程
+因为有些云服务提供商只让你安装linux
+准备1，一台是智简魔方创建的云服务器
+2，这台服务器本身不提供windows安装，支持就直接用官方就好
+3，救援系统可用
+4，ssh工具和一个脑子
+教程进入救援模式
+执行
+1bash &lt...
+    
+
+        <a href="/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-2026-04-26-debianubutnu 一键安装桌面vnc等"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2026-04-26 12:46:01" datetime="2026-04-26T04:46:01.649Z"  itemprop="datePublished">2026-04-26</time>
+
+        
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/04/26/2026-04-26-debianubutnu%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E6%A1%8C%E9%9D%A2vnc%E7%AD%89/">debian/ubutnu 一键安装桌面vnc等</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        我有一台香港的16-16拿来拿来建网站吧，已经有一台了，而且宽带也小也没有什么要干的于是我就想着 我在上面装个桌面，我不是就能干更对事情（因为我的电脑真的就太烂了，根本用不了qq等等）然后我就让ai给我生成了个脚本然后我运行之后发现更本用不了先是什么dbus，又是什么奇奇怪怪的问题然后改了亿下下，终于是能用了一键安装桌面，vnc并配置，输入法并配置，还能安装各种应用例如微信qq之类的gith...
+    
+
+        <a href="/2026/04/26/2026-04-26-debianubutnu%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E6%A1%8C%E9%9D%A2vnc%E7%AD%89/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-2026-02-16-hello"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2026-02-16 12:35:23" datetime="2026-02-16T04:35:23.047Z"  itemprop="datePublished">2026-02-16</time>
+
+        
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/02/16/2026-02-16-hello/">hello</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        大家好啊我是fanchuanhaha
+其实我很早以前就有搭建博客的想法我也搭了
+点击前往我的博客
+我想写一下生活上的，就像我朋友那样，但是我这个人有亿点点社恐哪怕是网上，哪怕一天访问量就十几个人我也不敢，所以我就搭建了这一个，blo.802213.xyz，一般人应该找不到awa
+这个博客我想不单单发布一些技术之类的我要发日常相关的，反正没人看，当然也可能带着亿点点负面情绪。。。反正没人看
+好...
+    
+
+        <a href="/2026/02/16/2026-02-16-hello/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-2026-02-12-小米22s纯卡刷教学"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2026-02-12 15:01:53" datetime="2026-02-12T07:01:53.731Z"  itemprop="datePublished">2026-02-12</time>
+
+        
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/">小米2/2s纯卡刷教学</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        视频教程
+欢迎加入交流262195311准备工具:小米2s，电脑，数据线1.合并分区(已经合并了或是安卓6+的跳过)合并分区就是把原来的 Dalvik虚拟机合并成ART虚拟机(不合并只能刷少数安卓4.4以下系统)先打开设置，找到存储，如果只有一个16或32gb的显示，那就是已经合并的了，跳过这步如果显示的是一个3gb和一个比8gb大的，那就是没有合并。需要线刷miui9。
+点击下载miui9...
+    
+
+        <a href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
+            <article id="post-2026-02-12-小米4c刷机、解BL、Root、lsp保姆级教学"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2026-02-12 15:00:23" datetime="2026-02-12T07:00:23.524Z"  itemprop="datePublished">2026-02-12</time>
+
+        
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/">小米4c刷机、解BL、Root、lsp保姆级教学</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        
+温馨提示
+刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。
+刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。
+刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。
+
+
+准备工作
+一台 小米4c
+一台 Win7 以上电脑
+一根 数据线（不是充电线）
+
+
+解锁BL由于官方的解锁服务器已经禁止了最新...
+    
+
+        <a href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/" class="post-more waves-effect waves-button">
+            阅读全文…
+        </a>
+    </div>
+    
+</article>
+
+        </li>
+    
+    </ul>
+
+    
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv">
+        站点总访客数：<span id="busuanzi_value_site_uv">114514</span>
+    </span>
+    <span id="busuanzi_container_site_pv">
+        站点总访问量：<span id="busuanzi_value_site_pv">114514</span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Fanchuanhaha &copy; 2015 - 2026</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAABVElEQVR42u3awQrCMBBF0f7/T0dwJRTT+yZVMXOzEizhdJFp8ibHgcd4jvm/r8+M0zg+MWTJ2og1puPMuuvfC7osWS1Z86JAnpm/ajyPLFmywMJOP+SyZMn6VYGQJUtWyiKbZn4c5fPcsJeXJWsLVhokrfz+YL4lS9bfskZppKB4flmymrHehbDrjRbegEFlQpasrVl8U1t7mdpWW5asbiweG5HjKJ8neD1ZshqweAngUSxHF/cOsmRtykrjnvQTHke6smQ1Y/HQNgiAQDYblA9ZspqxahcLVlZ0sbcjS9amrJU4aeUaAapYsmQ1ZvGD6Eo1uoiZZMlqwypeBQibnfGmWZasZqz1S3j8mFrs+ciS1YaVXrlL+yDFAiFLVkvWl5Iq3qqRJUvWTYs/bYLKkiWLH0H5xQIeVMmSJYtvmnmkmzZXZMmStX4RgS/+2gvIkrU16wFzaqZ+fkfvKgAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
 
 
 
 
 
-  </div>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
 </body>
 </html>

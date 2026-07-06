@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>小米4c刷机、解BL、Root、lsp保姆级教学 | Fanchuanhaha&#39;s Blog | welcome to my blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="">
+    <meta name="description" content="温馨提示 刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。 刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。 刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。   准备工作 一台 小米4c 一台 Win7 以上电脑 一根 数据线（不是充电线）   解锁BL由于官方的解锁服务器已经禁止了最新版本在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="小米4c刷机、解BL、Root、lsp保姆级教学">
+<meta property="og:url" content="http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/index.html">
+<meta property="og:site_name" content="Fanchuanhaha&#39;s Blog">
+<meta property="og:description" content="温馨提示 刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。 刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。 刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。   准备工作 一台 小米4c 一台 Win7 以上电脑 一根 数据线（不是充电线）   解锁BL由于官方的解锁服务器已经禁止了最新版本在">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-02-12T07:00:23.524Z">
+<meta property="article:modified_time" content="2026-06-21T11:46:01.889Z">
+<meta property="article:author" content="Fanchuanhaha">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="Fanchuanhaha&#39;s Blog" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- theme: auto-follow OS / persisted preference (no manual toggle) -->
+    <script>
+    (function(){
+        try {
+            var KEY = 'indigo-theme';
+            var html = document.documentElement;
+            var apply = function(mode) {
+                if (mode === 'dark') html.classList.add('theme-dark');
+                else html.classList.remove('theme-dark');
+            };
+            var initial = localStorage.getItem(KEY);
+            if (initial === 'dark' || initial === 'light') {
+                apply(initial);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                apply('dark');
+            }
+            // Follow OS preference changes live (only when user has not set explicitly)
+            if (window.matchMedia) {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                var listener = function(e) {
+                    if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+                };
+                if (mq.addEventListener) mq.addEventListener('change', listener);
+                else if (mq.addListener) mq.addListener(listener);
+            }
+        } catch (e) {}
+    })();
+    </script>
+
+    <!-- safety: force-show content if main.js fails or resources hang (desktop keeps loading) -->
+    <script>
+    (function() {
+        var timer = setTimeout(function() {
+            var loading = document.getElementById('loading');
+            if (loading && loading.classList.contains('active')) {
+                loading.classList.remove('active');
+                document.querySelectorAll('.fade, .fade-scale').forEach(function(el) {
+                    el.classList.add('in');
+                });
+            }
+        }, 4000);
+        // Clear the timer if load event fires normally
+        window.addEventListener('load', function() { clearTimeout(timer); });
+    })();
+    </script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(http://corper.cn/view.php/b6c03b6f5e94c190cc221552f4524729.gif)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Fanchuanhaha</h5>
+          <a href="mailto:3098393078@qq.com" title="3098393078@qq.com" class="mail">3098393078@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanchuanhaha" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://qm.qq.com/q/DTMDzZNZPa" target="_blank" >
+                <i class="icon icon-lg icon-qq"></i>
+                QQ群
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">小米4c刷机、解BL、Root、lsp保姆级教学</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header" style="background: linear-gradient(rgba(63,81,181,0.55), rgba(63,81,181,0.55)), url(http://corper.cn/view.php/aaa7ffb2f2785400cd4007243b9a8cad.jpg) center center / cover no-repeat;">
+
+    <div class="container fade-scale">
+        <h1 class="title">小米4c刷机、解BL、Root、lsp保姆级教学</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2026-02-12T07:00:23.524Z" itemprop="datePublished" class="page-time">
+  2026-02-12
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="post-toc-number">1.</span> <span class="post-toc-text">准备工作</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%A7%A3%E9%94%81BL"><span class="post-toc-number">2.</span> <span class="post-toc-text">解锁BL</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E5%BD%93%E5%89%8D%E7%89%88%E6%9C%AC"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">查看系统当前版本</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E9%99%8D%E7%BA%A7MIUI7"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">降级MIUI7</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%A7%A3%E9%94%81"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">解锁</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%88%B7%E5%85%A5Recovery"><span class="post-toc-number">3.</span> <span class="post-toc-text">刷入Recovery</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%88%B7%E5%85%A5%E5%88%B7%E6%9C%BA%E5%8C%85"><span class="post-toc-number">4.</span> <span class="post-toc-text">刷入刷机包</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Root"><span class="post-toc-number">5.</span> <span class="post-toc-text">Root</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#LSPosed"><span class="post-toc-number">6.</span> <span class="post-toc-text">LSPosed</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-2026-02-12-小米4c刷机、解BL、Root、lsp保姆级教学"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">小米4c刷机、解BL、Root、lsp保姆级教学</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2026-02-12 15:00:23" datetime="2026-02-12T07:00:23.524Z"  itemprop="datePublished">2026-02-12</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p><strong>温馨提示</strong></p>
+<p><strong>刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。</strong></p>
+<p><strong>刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。</strong></p>
+<p><strong>刷机有风险，玩机需谨慎，刷机不备份，被格两行泪。刷机造成的任何后果均与本作者无关。</strong></p>
+</blockquote>
+<hr>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
+<li>一台 <strong><code>小米4c</code></strong></li>
+<li>一台 <strong><code>Win7</code></strong> 以上电脑</li>
+<li>一根 <strong>数据线</strong>（<em>不是充电线</em>）</li>
+</ul>
+<hr>
+<h2 id="解锁BL"><a href="#解锁BL" class="headerlink" title="解锁BL"></a>解锁BL</h2><p>由于官方的解锁服务器已经禁止了最新版本在 <strong><code>MIUI12</code></strong> 以下的设备解锁，所以我们这里只能用强解BL。</p>
+<h3 id="查看系统当前版本"><a href="#查看系统当前版本" class="headerlink" title="查看系统当前版本"></a>查看系统当前版本</h3><p>打开 <strong>设置</strong> &gt; <strong>关于本机</strong> &gt; <strong>MIUI版本</strong>。</p>
+<ul>
+<li>如果当前MIUI版本在 <strong><code>7</code></strong> 以下（<em>包括7</em>），请跳到最后一步，<em><strong>千万不要升级</strong></em>。</li>
+</ul>
+<h3 id="降级MIUI7"><a href="#降级MIUI7" class="headerlink" title="降级MIUI7"></a>降级MIUI7</h3><p>由于我们没有解锁BL，这里用 <strong><code>9008</code></strong> 降级。</p>
+<ol>
+<li><p>在电脑上下载以下文件：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://802213.xyz/android.exe">安卓驱动</a></li>
+<li><a target="_blank" rel="noopener" href="https://802213.xyz/oppo.exe">9008驱动</a></li>
+<li><a target="_blank" rel="noopener" href="https://lsdy.lanzoui.com/iSlHs04ntrwb">搞机助手</a></li>
+<li><a target="_blank" rel="noopener" href="https://cdn.alsgp0.fds.api.mi-img.com/micomm/MiFlash2020-3-14-0.rar">MiFlash</a></li>
+<li><a target="_blank" rel="noopener" href="https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/V7.0.4.0.LXKCNCI/libra_images_V7.0.4.0.LXKCNCI_20150826.0000.7_5.1_cn_a7b0a12cef.tgz">MIUI7线刷包</a></li>
+</ul>
+</li>
+<li><p>打开 <strong><code>android.exe</code></strong> 点击安装，安装过程中有弹出安全窗口，点击确认。</p>
+</li>
+<li><p>打开 <strong><code>oppo.exe</code></strong>，点击下一步，同意，安装，安装过程中有弹出安全窗口，点击确认。</p>
+</li>
+<li><p>安装完两个驱动后 <strong>重启电脑</strong>。</p>
+</li>
+<li><p>重启后打开 <strong>搞机助手</strong>，点击 <strong>文件安装</strong>，<em>不用点提取</em>，点运行就行，同意并安装。</p>
+</li>
+<li><p>解压 <strong>MIUI7线刷包</strong> 和 <strong>MiFlash</strong>，<em>随便找个文件夹就行</em>。</p>
+</li>
+<li><p>打开搞机助手。</p>
+</li>
+<li><p>来到手机：</p>
+<ul>
+<li>打开 <strong>设置</strong> &gt; <strong>关于本机</strong> &gt; <strong>全部参数</strong> &gt; <strong>MIUI版本</strong>，<em>连续点击直到打开开发者选项</em>。</li>
+<li>返回设置 &gt; <strong>更多设置</strong> &gt; <strong>开发者选项</strong>，打开 <strong><code>OEM解锁</code></strong>，打开 <strong><code>USB调试</code></strong>。</li>
+</ul>
+</li>
+<li><p>用数据线将手机和电脑连接起来，过一会手机上会弹出配对提示，点击确认。</p>
+</li>
+<li><p>来到搞机助手，点击 <strong>系统模式下重启到引导模式</strong>，等待设备进入 <strong><code>Fastboot</code></strong>（<em>屏幕上会显示一个兔子在修机器人</em>）。</p>
+</li>
+<li><p>待搞机助手检测到设备，点击 <strong>从引导模式重启到9008</strong>，点击确认后 <em><strong>手机会黑屏</strong></em>。</p>
+</li>
+<li><p>点击 <strong>扩展功能</strong> &gt; <strong>9008深刷</strong>，如果出现端口（<em>比如像 <strong>COM3</strong> 这样的</em>）就退出。</p>
+</li>
+<li><p>打开 <strong>MiFlash</strong>，第一次打开会让你安装驱动，点击安装即可。</p>
+</li>
+<li><p>安装完成后点击 <strong>刷新</strong>，刷新出来即可。</p>
+</li>
+<li><p>点击左上角的 <strong>选择</strong>，选择你刚刚解压好的线刷包，确认。</p>
+</li>
+<li><p>在右下角点击 <strong>全部删除</strong>，点击左上角的 <strong>刷机</strong>。</p>
+</li>
+<li><p>大约过个两分钟，显示绿色的 <strong><code>Finish</code></strong> 就刷好了，就算是降级到MIUI7了。</p>
+</li>
+</ol>
+<h3 id="解锁"><a href="#解锁" class="headerlink" title="解锁"></a>解锁</h3><ul>
+<li>如果显示的是红色的，但是里面包含 <strong><code>lock</code></strong> 什么的，<em><strong>不用管，继续下一步</strong></em>。</li>
+<li>不管手机是否开机。</li>
+</ul>
+<ol>
+<li><p>长按手机 <strong>音量上键</strong>，再长按 <strong>电源键</strong>，直到手机出现 <strong><code>Fastboot</code></strong>。</p>
+</li>
+<li><p>搞机助手点击 <strong>扩展功能</strong> &gt; <strong><code>CMD</code>命令行</strong>，输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fastboot oem unlock</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>成功后再次重启 <strong><code>Fastboot</code></strong>，这时搞基助手会提示 <strong>已解锁</strong>，就代表BL以及解锁好了。</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>注意：</strong> 如果提示 <em><strong>未解锁</strong></em>，请勿进行下面步骤，请进入 <strong><code>Fastboot</code></strong> 重复从进入到 <strong><code>Fastboot</code></strong> 的全部过程。</p>
+</blockquote>
+<hr>
+<h2 id="刷入Recovery"><a href="#刷入Recovery" class="headerlink" title="刷入Recovery"></a>刷入Recovery</h2><p>这里我们刷的是 <strong>Orange Fox Recovery</strong>。</p>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://802213.xyz/mi4c/recovery.img">点击下载Orange Fox Recovery</a></p>
+</li>
+<li><p>打开搞机助手点击左侧 <strong>引导模式</strong>。</p>
+</li>
+<li><p>点击 <strong>刷入<code>Rec</code></strong> &gt; <strong>选择</strong>，选择下载好的 <strong><code>recovery.img</code></strong>。</p>
+</li>
+<li><p>点击 <strong>刷入</strong>，过几秒输入完成，点击 <strong>确认重启</strong> 按钮等待手机进入 <strong><code>Recovery</code></strong>，便算是刷入成功。</p>
+</li>
+</ol>
+<hr>
+<h2 id="刷入刷机包"><a href="#刷入刷机包" class="headerlink" title="刷入刷机包"></a>刷入刷机包</h2><blockquote>
+<p><strong>首先刷入MIUI10底包</strong></p>
+<p><strong>注意：</strong> 不管后面刷的是什么系统的刷机包，都得进行这操作。</p>
+<p><strong>注意：</strong> 不管后面刷的是什么系统的刷机包，都得进行这操作。</p>
+<p><strong>注意：</strong> 不管后面刷的是什么系统的刷机包，都得进行这操作。</p>
+</blockquote>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://802213.xyz/miui10.zip">点击下载MIUI10底包</a></p>
+</li>
+<li><p>在电脑上下载完成后，确保手机在 <strong><code>Recovery</code></strong> 模式。</p>
+</li>
+<li><p>电脑打开搞机助手，点击左侧 <strong>恢复模式</strong> &gt; <strong>推送文件</strong>，选择你下载到的 <strong><code>miui10.zip</code></strong>，点击推送，过几秒就会推送完成。</p>
+</li>
+<li><p>来到手机，选择你刚刚推送进来的 <strong><code>miui10.zip</code></strong>，滑动滑块，过几秒便会刷完。</p>
+</li>
+<li><p><em><strong>不要点击重启</strong></em>，点击下方的 <strong>垃圾桶</strong>，勾上 <strong><code>system</code></strong>、<strong><code>data</code></strong>、<strong><code>cache</code></strong>，滑动滑块，<em>别管报没报错</em>。</p>
+</li>
+<li><p>完成后点击下面的第四个 <strong>更多</strong> &gt; <strong><code>Reboot</code></strong> &gt; <strong><code>Recovery</code></strong>。</p>
+</li>
+</ol>
+<p>这下准备工作算是完成了，你可以刷入你想刷的刷机包了。</p>
+<p><a target="_blank" rel="noopener" href="https://pan.雪中明月.top/soft/%E6%89%8B%E6%9C%BA/%E5%B0%8F%E7%B1%B34C%20(LIBRA)/">点击前往刷机包资源下载网站</a></p>
+<p><strong>推荐刷机包：</strong></p>
+<ul>
+<li><strong>日用：</strong> <code>Flyme6</code>、<code>Mokee10</code>、<code>LineageOS11</code>、<code>LOS20</code>（<em>谨慎</em>）、<code>MIUI11</code></li>
+</ul>
+<ol>
+<li><p>下载到刷机包后，依旧确保手机在 <strong><code>Recovery</code></strong> 模式。</p>
+</li>
+<li><p>电脑打开搞机助手，点击左侧 <strong>恢复模式</strong> &gt; <strong>推送文件</strong>，选择你下载到的刷机包，点击推送，<em>这次可能会有点久</em>。</p>
+</li>
+<li><p>推送完成后来到手机，点击你刚刚推送的刷机包，滑动滑块，<em><strong>不要勾选重启</strong></em>。</p>
+</li>
+<li><p>刷完后点击下面的 <strong>更多</strong> &gt; <strong>磁盘管理</strong>（<em>就第二个那个</em>） &gt; <strong><code>data</code></strong> &gt; 点击右下角的 <strong>√</strong> &gt; <strong>格式化</strong>（<em>就红色那个</em>） &gt; 输入 <strong><code>yes</code></strong> 回车，<em>不管成没成功</em>。</p>
+</li>
+<li><p>返回，点击下面那个 <strong><code>Reboot</code></strong> &gt; <strong><code>System</code></strong>，过一会就可以重启到系统。</p>
+</li>
+</ol>
+<p><em><strong>好了现在就刷完系统了。</strong></em></p>
+<hr>
+<h2 id="Root"><a href="#Root" class="headerlink" title="Root"></a>Root</h2><ol>
+<li><p>在手机上下载 <strong>Magisk</strong> 安装包：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mrzzoxo.lanzoue.com/iACgn2hgvfmj">点击下载Magisk</a></li>
+</ul>
+</li>
+<li><p>下载完后安装，<em>安装完安装包不要删</em>。</p>
+</li>
+<li><p>给手机关机，长按 <strong>音量上键</strong>，再长按 <strong>电源键</strong>，出现 <strong><code>MI</code></strong> 后松开电源键，直到进入 <strong><code>Recovery</code></strong>（<em>如果你的<code>Rec</code>被系统覆盖掉了就再刷一遍</em>）。</p>
+</li>
+<li><p>找到你刚刚下载的 <strong><code>Magisk</code></strong> 的安装包，长按 &gt; 点击第一个 <strong><code>Open..</code></strong> &gt; 点击第二个 <strong>可刷入<code>zip</code></strong>，滑动滑块，等待刷入完成（<em>可能会有点久</em>）。</p>
+</li>
+<li><p>好了之后重启，进入系统，打开 <strong><code>Magisk</code></strong>，等待出现弹窗，点击 <strong>修复</strong>，他会自动重启。</p>
+</li>
+<li><p>重启完再打开 <strong><code>Magisk</code></strong>，点击 <strong>修复</strong> &gt; 直接点击 <strong>下一步</strong> &gt; 点击 <strong>直接安装</strong> &gt; 点确认，等待安装完成，再次重启。</p>
+</li>
+<li><p>打开 <strong><code>Magisk</code></strong>，可以点击 <strong>超级用户</strong>，并且没有出现提示，就说明 <strong><code>Root</code></strong> 完成了。</p>
+</li>
+</ol>
+<hr>
+<h2 id="LSPosed"><a href="#LSPosed" class="headerlink" title="LSPosed"></a>LSPosed</h2><ul>
+<li>安装 <strong><code>LSPosed</code></strong> 前请确保以安装 <strong><code>Root</code></strong>。</li>
+</ul>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://lsposed.cn/lsposed-down/LSPosed-v1.10.1-7115-zygisk-release.zip">点击下载LSPosed</a></p>
+</li>
+<li><p>下载完后打开 <strong><code>Magisk</code></strong>，点击下方 <strong>模块</strong> &gt; <strong>从本地安装</strong> &gt; <strong>刷入</strong>，选择刚刚下载好的 <strong><code>LSP</code>模块</strong>，点击确认，等待刷入完成。</p>
+</li>
+<li><p><em><strong>先别点重启</strong></em>，返回，来到 <strong><code>Magisk</code></strong> 主页，点击右上角 <strong>设置</strong>，打开 <strong><code>Zygisk</code></strong> 选项。</p>
+</li>
+<li><p>重启手机。</p>
+</li>
+<li><p>重启后打开 <strong><code>LSPosed</code></strong>，如果显示 <strong>已安装</strong> 或者 <strong>更新</strong>，就说明安装好了。</p>
+</li>
+</ol>
+<ul>
+<li>有时候重启后会发现没有 <strong><code>LSPosed</code></strong> 这个应用，我们只要打开 <strong><code>MT管理器</code></strong>，打开你下载的 <strong><code>LSP</code>模块</strong>，点击里面的 <strong><code>manager.apk</code></strong>，点击安装，安装完就有了。</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2026-06-21T11:46:01.889Z" itemprop="dateUpdated">2026-06-21 19:46:01</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/" target="_blank" rel="external">http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" alt="Fanchuanhaha">
+            Fanchuanhaha
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">小米2/2s纯卡刷教学</h4>
+      </a>
+    </div>
+  
+
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv">
+        站点总访客数：<span id="busuanzi_value_site_uv">114514</span>
+    </span>
+    <span id="busuanzi_container_site_pv">
+        站点总访问量：<span id="busuanzi_value_site_pv">114514</span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Fanchuanhaha &copy; 2015 - 2026</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT4AAAE+CAAAAAAxUyPsAAAFRElEQVR42u3bwW7rSAwEQP//T2evD1g46WbLuaR0CmDZGtUcRDWZ1ys+vt4c/376/Znfn///v/P1tGv4/szXJw58+PDhw4cvoLmhJBzJL3+/wndXfHfd74Fu94sPHz58+PAtfMlNtgvKz0++lXw32cKnNh4fPnz48OH7Tb7k5f+pIibfjGQDlvACHz58+PDh+32+4qcDoDym34ueNozAhw8fPnz4PseXP+Db5bYlSHJ+u21tJPGRXgc+fPjw4cNXTmH9nb8/Mt+HDx8+fPj+PN9XeTz1yF8a3m24cCuVIg18+PDhw4fvpJEvKF9WXhzcXsVvQ2btUF1yXXz48OHDh+9ZvvzBvzcA9uG2ZZ15EfNY9x4fPnz48P0xvra8WBrbeVyeD7TtI2tL+xwfPnz48OFbEu88fM9Zc76kdLjFGXupFBVS+PDhw4cP39fhf5NfSwFxu3z+aRJA5CVIvlXT4Bo+fPjw4cMXD4QlnyZFTPIL+Wv8s2F9W9zgw4cPHz58z/K1r9ZtGZQvri2P2vXsgwL48OHDhw9fe34emufFwVNweUCQl1b5Bh8H1PDhw4cPH76YL4m895igLT6WOKMN4uvGAz58+PDhw3fpWR8b1e1reXtOWza1G7wXSfjw4cOHD1/L1w6K3QbObi3q5e9bM6BtG+DDhw8fPnwt36eb3Lc44BbE78NwbfmCDx8+fPjwtXx7WL9T5jR5QH8rO/IxOHz48OHDh2/na8P69vFfDH6dmgS3QbcHGuT48OHDhw9fl6LXr/G3NvatjGi3cFlJXrq9RcSHDx8+fPhivuS1fFnuEjQUr/HBp7dI4ocSCh8+fPjw4Sv7vHX/vIzRbzeWt8PbQiq/37ffwocPHz58+IbZrWWirX2Nz5vZ+zbkMUce6L9uU2/48OHDhw9f2Szfi4/85fzZIKAdwivaEvjw4cOHD9+JLy9c2lGwZbkJQVtwLIULPnz48OHDt/BFM2tDuNBG4XsrPSmVXvOBDx8+fPjw3fj2tvdevrTb8yzfcr/48OHDhw9fy7e0xm+DX1+no335b9Gn0XB8+PDhw4ev5Msf5O2wWv6bbZP+E+32/IqvWx2EDx8+fPj+PN9t2Kvla4OJtrBoG+Rt+3/L7/Hhw4cPH76fw+4Ea1lcWwDdfu2pIba3V8GHDx8+fPgu2fVxBPzWKV6a6EnA8dRQXXEtfPjw4cOHL+a7vaLnT+12cW2RtJQpe9MCHz58+PDha/mWsuBWarRt79tY223c/BYu4MOHDx8+fDnf8lBfLv+Kj6VtcBtuS7bhWAHhw4cPHz58QfGxLzG/jdvN5xuThyPRpuLDhw8fPnwl3zIKlgf9t9HzT9C00fxxygAfPnz48OGLJ6zaR3heatzCiLznsDQGWsoiO8GHDx8+fPhijrwUyG/g9ulTI2V7SRR9Cx8+fPjw4Qu+VT+eTwu9nXkriZK2ehvfF/N9+PDhw4cP3yudbV5e3fOyY2nS3wbmHo4/8OHDhw8fvhNfXt3UHfhTS3svkvJ4YlotPnz48OHDN/PdSpb8NTtveCfFyhIQ5AXQ26vgw4cPHz5897f7IpTfL5lw5y/wt1GzvPy6Ndfx4cOHDx++d9+9DXLte7VE+Ush1f7CD5/iw4cPHz58J75bwzgJ69uN2QfjlkZCG/fjw4cPHz58v8nXFiV7kyCJ+POYPrmvH2J6fPjw4cOH78N8+aP9FkPcSqI2nrhtGD58+PDhw/cUX3KryZDWLe7Pv5uvMI/p81VNbXJ8+PDhw4dvCKlb9HZBeSiQrPO2nnzkDh8+fPjw4QvO/A+nv359XY3j0gAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

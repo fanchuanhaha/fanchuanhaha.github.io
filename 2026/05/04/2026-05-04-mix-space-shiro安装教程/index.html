@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>mix-space-shiro安装教程 | Fanchuanhaha&#39;s Blog | welcome to my blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="">
+    <meta name="description" content="前言这真的就是给那个方法给你嚼碎了喂你的再看不懂我也没办法（到时候会出一期教程视频）参考资料 https:&#x2F;&#x2F;mx-space.js.org&#x2F;docs&#x2F;core https:&#x2F;&#x2F;blog.xp6.top&#x2F;posts&#x2F;%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8&#x2F;91 首先你需要有一台云服务器，这里我推荐“狐蒂云” 注册链接：https:&#x2F;&#x2F;www.szhdy.com&#x2F;a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mix-space-shiro安装教程">
+<meta property="og:url" content="http://example.com/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Fanchuanhaha&#39;s Blog">
+<meta property="og:description" content="前言这真的就是给那个方法给你嚼碎了喂你的再看不懂我也没办法（到时候会出一期教程视频）参考资料 https:&#x2F;&#x2F;mx-space.js.org&#x2F;docs&#x2F;core https:&#x2F;&#x2F;blog.xp6.top&#x2F;posts&#x2F;%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8&#x2F;91 首先你需要有一台云服务器，这里我推荐“狐蒂云” 注册链接：https:&#x2F;&#x2F;www.szhdy.com&#x2F;a">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_21-32-21.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_12-51-00.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_12-14-01.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-05-52.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-37-08.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-38-11.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-54-26.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_15-13-38.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_15-18-33.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-16-14.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-07-07.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_17-09-05.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-52-20.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-04-37.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-08-03.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_17-26-23.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_17-53-20.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-03-43.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-06-26.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-08-11.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-10-37.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-13-06.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-19-02.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-21-13.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_11-15-03.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-07-07.png">
+<meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-04-37.png">
+<meta property="article:published_time" content="2026-05-04T06:04:44.637Z">
+<meta property="article:modified_time" content="2026-07-06T14:39:41.643Z">
+<meta property="article:author" content="Fanchuanhaha">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_21-32-21.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="Fanchuanhaha&#39;s Blog" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- theme: auto-follow OS / persisted preference (no manual toggle) -->
+    <script>
+    (function(){
+        try {
+            var KEY = 'indigo-theme';
+            var html = document.documentElement;
+            var apply = function(mode) {
+                if (mode === 'dark') html.classList.add('theme-dark');
+                else html.classList.remove('theme-dark');
+            };
+            var initial = localStorage.getItem(KEY);
+            if (initial === 'dark' || initial === 'light') {
+                apply(initial);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                apply('dark');
+            }
+            // Follow OS preference changes live (only when user has not set explicitly)
+            if (window.matchMedia) {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                var listener = function(e) {
+                    if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+                };
+                if (mq.addEventListener) mq.addEventListener('change', listener);
+                else if (mq.addListener) mq.addListener(listener);
+            }
+        } catch (e) {}
+    })();
+    </script>
+
+    <!-- safety: force-show content if main.js fails or resources hang (desktop keeps loading) -->
+    <script>
+    (function() {
+        var timer = setTimeout(function() {
+            var loading = document.getElementById('loading');
+            if (loading && loading.classList.contains('active')) {
+                loading.classList.remove('active');
+                document.querySelectorAll('.fade, .fade-scale').forEach(function(el) {
+                    el.classList.add('in');
+                });
+            }
+        }, 4000);
+        // Clear the timer if load event fires normally
+        window.addEventListener('load', function() { clearTimeout(timer); });
+    })();
+    </script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(http://corper.cn/view.php/b6c03b6f5e94c190cc221552f4524729.gif)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Fanchuanhaha</h5>
+          <a href="mailto:3098393078@qq.com" title="3098393078@qq.com" class="mail">3098393078@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanchuanhaha" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://qm.qq.com/q/DTMDzZNZPa" target="_blank" >
+                <i class="icon icon-lg icon-qq"></i>
+                QQ群
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">mix-space-shiro安装教程</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header" style="background: linear-gradient(rgba(63,81,181,0.55), rgba(63,81,181,0.55)), url(http://corper.cn/view.php/aaa7ffb2f2785400cd4007243b9a8cad.jpg) center center / cover no-repeat;">
+
+    <div class="container fade-scale">
+        <h1 class="title">mix-space-shiro安装教程</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2026-05-04T06:04:44.637Z" itemprop="datePublished" class="page-time">
+  2026-05-04
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%87%86%E5%A4%87"><span class="post-toc-number">2.</span> <span class="post-toc-text">准备</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%95%99%E7%A8%8B"><span class="post-toc-number">3.</span> <span class="post-toc-text">教程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">连接服务器</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85%E5%AE%9D%E5%A1%94and%E6%89%80%E9%9C%80%E8%BD%AF%E4%BB%B6"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">安装宝塔and所需软件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%89%A7%E8%A1%8C%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">执行安装脚本</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%85%8D%E7%BD%AE%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">配置反向代理</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%99%BB%E9%99%86%E5%90%8E%E7%AB%AF%E5%8F%8A%E9%85%8D%E7%BD%AE"><span class="post-toc-number">3.5.</span> <span class="post-toc-text">登陆后端及配置</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-2026-05-04-mix-space-shiro安装教程"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">mix-space-shiro安装教程</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2026-05-04 14:04:44" datetime="2026-05-04T06:04:44.637Z"  itemprop="datePublished">2026-05-04</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这真的就是给那个方法给你嚼碎了喂你的再看不懂我也没办法（到时候会出一期教程视频）<br>参考资料</p>
+<p><a target="_blank" rel="noopener" href="https://mx-space.js.org/docs/core">https://mx-space.js.org/docs/core</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.xp6.top/posts/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/91">https://blog.xp6.top/posts/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/91</a></p>
+<p>首先你需要有一台云服务器，这里我推荐<code>“狐蒂云”</code></p>
+<p>注册链接：<a target="_blank" rel="noopener" href="https://www.szhdy.com/aff/IGBTWUUW">https://www.szhdy.com/aff/IGBTWUUW</a></p>
+<p>注册后你可以去购买云服务，他家活动时不时就有非常有性价比的产品出现</p>
+<p>然后你会获得一个ip地址和一个ssh密码，我们可以用finalshell链接</p>
+<p>finalshell下载链接：<a target="_blank" rel="noopener" href="https://dl.hostbuf.com/finalshell3/finalshell_windows_x64.exe">https://dl.hostbuf.com/finalshell3/finalshell_windows_x64.exe</a></p>
+<p>手机可以用<code>serverbox</code></p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p><strong>一台服务器</strong></p>
+<p><strong>一个域名</strong></p>
+<p><strong>一个ssh连接工具</strong></p>
+<h1 id="教程"><a href="#教程" class="headerlink" title="教程"></a>教程</h1><h2 id="连接服务器"><a href="#连接服务器" class="headerlink" title="连接服务器"></a>连接服务器</h2><p>打开finalshell，点击上方文件样子的图标，点击添加图标，选ssh链接将云服务器提供商的参数填进去，然后确认返回，点击即刚刚新建的连接上服务器，点击接受和保存</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_21-32-21.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<h2 id="安装宝塔and所需软件"><a href="#安装宝塔and所需软件" class="headerlink" title="安装宝塔and所需软件"></a>安装宝塔and所需软件</h2><p>输入以下命令先安装宝塔面板</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_12-51-00.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -f /usr/bin/curl ];<span class="keyword">then</span> curl -sSO https://download.bt.cn/install/install_panel.sh;<span class="keyword">else</span> wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;<span class="keyword">fi</span>;bash install_panel.sh ed8484bec</span><br></pre></td></tr></table></figure>
+
+
+<p>等待期安装完成</p>
+<p>访问所给出的面板往外网访问地址（若你的云服务商开了防火墙，记得放行端口）</p>
+<p><img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_12-14-01.png"></p>
+<p>复制账号密码进去然后登陆</p>
+<p>滑倒最下然后同意协议</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-05-52.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>点击暂不绑定（当然你有的花也可以绑定）</p>
+<p>点击下方这个极速安装，如果你想快点可以只勾选nginx</p>
+<p><img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-37-08.png"></p>
+<p>等待安装完成</p>
+<p><img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-38-11.png"></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_13-54-26.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>返回点击左侧的docker</p>
+<p><img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_15-13-38.png"></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_15-18-33.png" alt="](https://tp.802213.xyz/uploads/SnowShot_2026-05-02_15-15-55.png)![" title="">
+                </div>
+                <div class="image-caption">](https://tp.802213.xyz/uploads/SnowShot_2026-05-02_15-15-55.png)![</div>
+            </figure>等待期安装完成（有可能出现successful但是不会关闭，你自己关了就好）
+<h2 id="执行安装脚本"><a href="#执行安装脚本" class="headerlink" title="执行安装脚本"></a>执行安装脚本</h2><p>回到finalshell</p>
+<p>输入</p>
+<p><img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-16-14.png"></p>
+<figure class="highlight bash"><figcaption><span><(curl -LsS sh.802213.xyz/mx.sh)</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bash &lt;(curl -LsS sh.802213.xyz/mx.sh)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个是我照着教程拿ai写的：（<br>感谢ZXEB大佬提供的修复后的shiro的启动文件</p>
+<p>这里输入的是你的<code>后端域名</code><br>等待执行到这一步</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-07-07.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+
+<h2 id="配置反向代理"><a href="#配置反向代理" class="headerlink" title="配置反向代理"></a>配置反向代理</h2><p>回到宝塔面板，现在来配置反向代理<br>这里的域名填你刚刚输入的<code>后端域名</code></p>
+<p>目标填<code>http://127.0.0.1:2333</code></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_17-09-05.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>然后配置ssl</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-52-20.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-04-37.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-08-03.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_17-26-23.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>然后新建一个浏览器窗口，打开你的后端地址&#x2F;proxy&#x2F;qaqdmin</p>
+<h2 id="登陆后端及配置"><a href="#登陆后端及配置" class="headerlink" title="登陆后端及配置"></a>登陆后端及配置</h2><p>随后进行配置</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_17-53-20.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>按你的需求填</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-03-43.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-06-26.png" alt="](https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-05-41.png)![" title="">
+                </div>
+                <div class="image-caption">](https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-05-41.png)![</div>
+            </figure>点击link start
+
+<p>然后输入你刚刚设的密码</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-02_18-08-11.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>这样就成功进到后端了</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-10-37.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>现在配置云函数（给前端看的）</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-13-06.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>新建如下</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-19-02.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_09-21-13.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>删除全部替换下面的</p>
+<p>复制粘贴下面的（不要照抄更具自己的修改）</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;footer&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;otherInfo&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;date&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2020-&#123;&#123;now&#125;&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;icp&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;萌 ICP 备 20236136 号&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;link&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://icp.gov.moe/?keyword=20236136&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;linkSections&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;关于&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;links&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;关于本站&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/about-site&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;关于我&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/about&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;关于此项目&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://github.com/innei/Shiro&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;external&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">          <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;更多&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;links&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;时间线&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/timeline&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;友链&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/friends&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;监控&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://status.innei.in/status/main&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;external&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">          <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;联系&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;links&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;写留言&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/message&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;发邮件&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;mailto:i@innei.ren&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;external&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;GitHub&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;href&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://github.com/innei&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;external&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">          <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;config&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;color&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;light&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;#33A6B8&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#FF6666&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#26A69A&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#fb7287&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#69a6cc&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#F11A7B&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#78C1F3&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#FF6666&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#7ACDF6&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;dark&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;#F596AA&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#A0A7D4&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#ff7b7b&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#99D8CF&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#838BC6&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#FFE5AD&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#9BE8D8&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#A1CCD1&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;#EAAEBA&quot;</span></span><br><span class="line">      <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">&quot;bg&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="string">&quot;https://github.com/Innei/static/blob/master/images/F0q8mwwaIAEtird.jpeg?raw=true&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="string">&quot;https://github.com/Innei/static/blob/master/images/IMG_2111.jpeg.webp.jpg?raw=true&quot;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;custom&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;css&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;styles&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;js&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;site&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;favicon&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/innei.svg&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;faviconDark&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/innei-dark.svg&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;hero&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;template&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;h1&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hi, I&#x27;m &quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="string">&quot;font-light text-4xl&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;h1&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Innei&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="string">&quot;font-medium mx-2 text-4xl&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;h1&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;👋。&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="string">&quot;font-light text-4xl&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;br&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;h1&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A NodeJS Full Stack &quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="string">&quot;font-light text-4xl&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;Developer /&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="string">&quot;font-medium mx-2 text-3xl rounded p-1 bg-gray-200 dark:bg-gray-800/0 hover:dark:bg-gray-800/100 bg-opacity-0 hover:bg-opacity-100 transition-background duration-200&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;span&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="string">&quot;inline-block w-[1px] h-8 -bottom-2 relative bg-gray-800/80 dark:bg-gray-200/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 group-hover:animation-blink&quot;</span></span><br><span class="line">          <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;An independent developer coding with love.&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;module&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;activity&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;enable&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;endpoint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/fn/ps/update&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;donate&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;enable&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;link&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://afdian.net/@Innei&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;qrcode&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">          <span class="string">&quot;https://cdn.jsdelivr.net/gh/Innei/img-bed@master/20191211132347.png&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="string">&quot;https://cdn.innei.ren/bed/2023/0424213144.png&quot;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;bilibili&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;liveId&quot;</span><span class="punctuation">:</span> <span class="number">1434499</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>保存</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_11-15-03.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>然后回到终端继续执行安装</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-07-07.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>等待期安装完成</p>
+<p>返回宝塔面本，配置前端的代理</p>
+<p>和后端一样的步骤</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-04-37.png" alt="](https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-23-47.png)![](https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-08-03.png)![" title="">
+                </div>
+                <div class="image-caption">](https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-23-47.png)![](https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-08-03.png)![</div>
+            </figure>
+
+<p>之后访问你的前端域名，即可成功访问网站</p>
+<p>有不懂得欢迎加入q群262195311讨论</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2026-07-06T14:39:41.643Z" itemprop="dateUpdated">2026-07-06 22:39:41</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/" target="_blank" rel="external">http://example.com/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" alt="Fanchuanhaha">
+            Fanchuanhaha
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">云服务器强制安装windows</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv">
+        站点总访客数：<span id="busuanzi_value_site_uv">114514</span>
+    </span>
+    <span id="busuanzi_container_site_pv">
+        站点总访问量：<span id="busuanzi_value_site_pv">114514</span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Fanchuanhaha &copy; 2015 - 2026</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADHUlEQVR42u3aS5LiUAwEwL7/pZlNb4EqPRPTFukVwccmzUKopJ+f+Hi8PF6/89nZ2uu2r15wYGNjY9+EnZDyZ57BkjO/BiTXyn8ebGxs7H3s/DJJXTgvVM9uXP74jREbGxv7i9mP+Hj9/uTVk1uAjY2NjZ2XkzY2ygOpNlTCxsbG/mZ2Umba29GGUMnt+A9ZGjY2NvafZ59ERX/t8Ufm29jY2Nh/mP0oj7YUtUs8+aLPLOT6/RQ2Njb2InZeANplyjY2mpXMo++PjY2NvYLdfiAPaNrVzKui/+iK2NjY2IvYs2gpaU5OMpzZeKD9FDY2NvYOdlKQZpfM25hrQ6XozNjY2Njr2DNM0qjkQ4XZmmZyU96EStjY2Ng3Z+dBfx4wJYPek+HxVQud2NjY2PvYSavQthbJ5U+GxLMACxsbG3s3uy0zs6LVrlG25bMYUWNjY2OvYM8Y7b/6C2L9S1eCsLGxsXewk4/NQv/2mWtbkTfvx8bGxl7EngXxswvnN3fGTgbJb35zbGxs7JuzZ8PU2Xi4XceZfc83xRIbGxt7HXu2dnm+gnnVan4dM2FjY2MvYre881XLdlWoLVpDKjY2NvZt2XmknnzFdhx7Xq6GA2NsbGzs1ey2hOSPz0fFeWxULF9iY2NjL2LPOpg24r82wBq2JdjY2Njr2G3ZyP/0J6Pidt1nFophY2Nj72aflK48hJrFQ1ct67xpRbCxsbFvyD4Jd9oSksdPCftkVIyNjY29j/2JRZx2+WYWb7UDCWxsbOx97NkYtR24fq45OUqKsLGxsdexT8pPvtaTLwbNmpmi3GJjY2N/DTsPgE5GxclVTtjRVAQbGxt7BXu2oHPy6qzxaFc2ozuNjY2NfUP2ozzOI/v2PNeWSWxsbOx97NnazWzcO1vHace67XACGxsbewc7wbRlpm0hXr+zbWyigTE2Njb2OnZeMNrR7FVD4lnJfHrjsLGxsb+e/YlAp211TobQ2NjY2Niz4H64XvPy/O2txMbGxt7KzhuGthWZDW7Pl4Si5UtsbGzsFey8Sbh29acd7p4PhrGxsbHXsf8B7JcCXZneRXYAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

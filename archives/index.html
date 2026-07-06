@@ -1,187 +1,486 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  
-  
-  <title>Archives | Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="John Doe">
-<meta name="twitter:card" content="summary">
-  
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="shortcut icon" href="/favicon.png">
-  
-  
-  
-<link rel="stylesheet" href="/css/style.css">
-
-  
     
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
 
-  
-  
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+    
 
-<meta name="generator" content="Hexo 8.1.2"></head>
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>Archives | Fanchuanhaha&#39;s Blog | welcome to my blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="Fanchuanhaha&#39;s Blog">
+<meta property="og:url" content="http://example.com/archives/index.html">
+<meta property="og:site_name" content="Fanchuanhaha&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Fanchuanhaha">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="Fanchuanhaha&#39;s Blog" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- theme: auto-follow OS / persisted preference (no manual toggle) -->
+    <script>
+    (function(){
+        try {
+            var KEY = 'indigo-theme';
+            var html = document.documentElement;
+            var apply = function(mode) {
+                if (mode === 'dark') html.classList.add('theme-dark');
+                else html.classList.remove('theme-dark');
+            };
+            var initial = localStorage.getItem(KEY);
+            if (initial === 'dark' || initial === 'light') {
+                apply(initial);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                apply('dark');
+            }
+            // Follow OS preference changes live (only when user has not set explicitly)
+            if (window.matchMedia) {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                var listener = function(e) {
+                    if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+                };
+                if (mq.addEventListener) mq.addEventListener('change', listener);
+                else if (mq.addListener) mq.addListener(listener);
+            }
+        } catch (e) {}
+    })();
+    </script>
+
+    <!-- safety: force-show content if main.js fails or resources hang (desktop keeps loading) -->
+    <script>
+    (function() {
+        var timer = setTimeout(function() {
+            var loading = document.getElementById('loading');
+            if (loading && loading.classList.contains('active')) {
+                loading.classList.remove('active');
+                document.querySelectorAll('.fade, .fade-scale').forEach(function(el) {
+                    el.classList.add('in');
+                });
+            }
+        }, 4000);
+        // Clear the timer if load event fires normally
+        window.addEventListener('load', function() { clearTimeout(timer); });
+    })();
+    </script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 7.3.0"></head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-        
-          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
-        
-        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu"  >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(http://corper.cn/view.php/b6c03b6f5e94c190cc221552f4524729.gif)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Fanchuanhaha</h5>
+          <a href="mailto:3098393078@qq.com" title="3098393078@qq.com" class="mail">3098393078@qq.com</a>
+        </hgroup>
       </div>
     </div>
-  </div>
-</header>
-
-      <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2026" class="archive-year">2026</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2026/06/19/hello-world/" class="archive-article-date">
-  <time class="dt-published" datetime="2026-06-19T10:22:48.850Z" itemprop="datePublished">Jun 19</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2026/06/19/hello-world/">Hello World</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-
-</section>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
         
-          <aside id="sidebar">
-  
-    
-
-  
-    
-
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">June 2026</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
         
-          <li>
-            <a href="/2026/06/19/hello-world/">Hello World</a>
-          </li>
+            <li class="waves-block waves-effect active">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanchuanhaha" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://qm.qq.com/q/DTMDzZNZPa" target="_blank" >
+                <i class="icon icon-lg icon-qq"></i>
+                QQ群
+              </a>
+            </li>
         
       </ul>
     </div>
   </div>
-
-  
 </aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      
-      &copy; 2026 John Doe<br>
-      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
 
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Archives</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
     </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
+</header>
+<header class="content-header archives-header" style="background: linear-gradient(rgba(63,81,181,0.55), rgba(63,81,181,0.55)), url(http://corper.cn/view.php/aaa7ffb2f2785400cd4007243b9a8cad.jpg) center center / cover no-repeat;">
+
+    <div class="container fade-scale">
+        <h1 class="title">Archives</h1>
+        <h5 class="subtitle">
+            
+        </h5>
+    </div>
+
     
 
 
-<script src="/js/jquery-3.6.4.min.js"></script>
+</header>
 
+<div class="container body-wrap fade">
+    
+
+    
+            
+            <h3 class="archive-separator">五月, 2026</h3>
+            <div class="waterfall">
+    
+
+        <div class="waterfall-item">
+  <article class="article-card archive-article">
+    <div class="post-meta">
+      <time class="post-time" title="2026-05-04 14:04:44" datetime="2026-05-04T06:04:44.637Z"  itemprop="datePublished">2026-05-04</time>
+
+      
+
+
+    </div>
+    
 
 
   
-<script src="/fancybox/jquery.fancybox.min.js"></script>
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">mix-space-shiro安装教程</a>
+    </h3>
+  
+
+
+
+    
+  </article>
+</div>
+
+    
+            </div> 
+            <h3 class="archive-separator">四月, 2026</h3>
+            <div class="waterfall">
+    
+
+        <div class="waterfall-item">
+  <article class="article-card archive-article">
+    <div class="post-meta">
+      <time class="post-time" title="2026-04-26 13:27:47" datetime="2026-04-26T05:27:47.075Z"  itemprop="datePublished">2026-04-26</time>
+
+      
+
+
+    </div>
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/">云服务器强制安装windows</a>
+    </h3>
+  
+
+
+
+    
+  </article>
+</div>
+
+    
+
+        <div class="waterfall-item">
+  <article class="article-card archive-article">
+    <div class="post-meta">
+      <time class="post-time" title="2026-04-26 12:46:01" datetime="2026-04-26T04:46:01.649Z"  itemprop="datePublished">2026-04-26</time>
+
+      
+
+
+    </div>
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/04/26/2026-04-26-debianubutnu%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E6%A1%8C%E9%9D%A2vnc%E7%AD%89/">debian/ubutnu 一键安装桌面vnc等</a>
+    </h3>
+  
+
+
+
+    
+  </article>
+</div>
+
+    
+            </div> 
+            <h3 class="archive-separator">二月, 2026</h3>
+            <div class="waterfall">
+    
+
+        <div class="waterfall-item">
+  <article class="article-card archive-article">
+    <div class="post-meta">
+      <time class="post-time" title="2026-02-16 12:35:23" datetime="2026-02-16T04:35:23.047Z"  itemprop="datePublished">2026-02-16</time>
+
+      
+
+
+    </div>
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/02/16/2026-02-16-hello/">hello</a>
+    </h3>
+  
+
+
+
+    
+  </article>
+</div>
+
+    
+
+        <div class="waterfall-item">
+  <article class="article-card archive-article">
+    <div class="post-meta">
+      <time class="post-time" title="2026-02-12 15:01:53" datetime="2026-02-12T07:01:53.731Z"  itemprop="datePublished">2026-02-12</time>
+
+      
+
+
+    </div>
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/">小米2/2s纯卡刷教学</a>
+    </h3>
+  
+
+
+
+    
+  </article>
+</div>
+
+    
+
+        <div class="waterfall-item">
+  <article class="article-card archive-article">
+    <div class="post-meta">
+      <time class="post-time" title="2026-02-12 15:00:23" datetime="2026-02-12T07:00:23.524Z"  itemprop="datePublished">2026-02-12</time>
+
+      
+
+
+    </div>
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/">小米4c刷机、解BL、Root、lsp保姆级教学</a>
+    </h3>
+  
+
+
+
+    
+  </article>
+</div>
+
+    
+    </div>
+
+    
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv">
+        站点总访客数：<span id="busuanzi_value_site_uv">114514</span>
+    </span>
+    <span id="busuanzi_container_site_pv">
+        站点总访问量：<span id="busuanzi_value_site_pv">114514</span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Fanchuanhaha &copy; 2015 - 2026</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAAByUlEQVR42u3aOW7EMAwFUN//0k6TIkAQzycpKTPAU+XCy4MLgtt1xef+4zzfmbzt2nFwcXHH3Pvx/Lzn91NVYvKGFz8FFxf3IPf5A0kIe352fg8uLu77cyepTBIocXFxP4Vbvc4LJFxc3PfkJsVPkvQk5VPy1IJaDRcXd8DNu5T7rrf0d3FxcVvcu3Xy8mbVF7/fhouLe4TbK2bywJQnMUkChIuLe56bQ/Pg1QtwLxoruLi4B7n54lQSvHptlKgowsXF3cztJRx56Fl8jYuLe4TbG2PkLY/ekveCcIaLizvmTlayJuXNpPGKi4u7m5sHryQZyp+tLnri4uL+Fzf/zCQNylOiaJSCi4u7gbuvsJmPYAu5GC4u7iJuHsLyAUxvSBOlTbi4uEe4eTKRty+rIa/8RVxc3M3c3lJmdfnyik80E8bFxd3MfQYlMaSaGPVCIS4u7knuXTxJeNpS8FTjKC4u7oDbCy7lsWjcMO2VW7i4uDu4vZXuKq7a2Rgtc+Pi4i7iVhup+fpmNX3BxcX9LO6k7MlXuwpdHFxc3DfgznHV1uqLUSsuLu5m7mR1u7eK0dupwMXFPcPtLUZURy/VNfEF/V1cXNwO9wuMMwYcz+e4agAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
 
 
 
 
-<script src="/js/script.js"></script>
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
 
 
 
 
 
-  </div>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
 </body>
 </html>

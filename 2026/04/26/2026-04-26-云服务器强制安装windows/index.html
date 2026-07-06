@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>云服务器强制安装windows | Fanchuanhaha&#39;s Blog | welcome to my blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="">
+    <meta name="description" content="前言ps:语文太好了写出来的东西不堪入目全是然后...什么什么的，让ai优化了一下 这算是一片如何在不支持windows安装的云服务器上安装windows的教程 因为有些云服务提供商只让你安装linux 准备1，一台是智简魔方创建的云服务器 2，这台服务器本身不提供windows安装，支持就直接用官方就好 3，救援系统可用 4，ssh工具和一个脑子 教程进入救援模式 执行 1bash &lt;(c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="云服务器强制安装windows">
+<meta property="og:url" content="http://example.com/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/index.html">
+<meta property="og:site_name" content="Fanchuanhaha&#39;s Blog">
+<meta property="og:description" content="前言ps:语文太好了写出来的东西不堪入目全是然后...什么什么的，让ai优化了一下 这算是一片如何在不支持windows安装的云服务器上安装windows的教程 因为有些云服务提供商只让你安装linux 准备1，一台是智简魔方创建的云服务器 2，这台服务器本身不提供windows安装，支持就直接用官方就好 3，救援系统可用 4，ssh工具和一个脑子 教程进入救援模式 执行 1bash &lt;(c">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-26T05:27:47.075Z">
+<meta property="article:modified_time" content="2026-06-21T11:46:01.894Z">
+<meta property="article:author" content="Fanchuanhaha">
+<meta name="twitter:card" content="summary">
+    
+        <link rel="alternate" type="application/atom+xml" title="Fanchuanhaha&#39;s Blog" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.7.2">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- theme: auto-follow OS / persisted preference (no manual toggle) -->
+    <script>
+    (function(){
+        try {
+            var KEY = 'indigo-theme';
+            var html = document.documentElement;
+            var apply = function(mode) {
+                if (mode === 'dark') html.classList.add('theme-dark');
+                else html.classList.remove('theme-dark');
+            };
+            var initial = localStorage.getItem(KEY);
+            if (initial === 'dark' || initial === 'light') {
+                apply(initial);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                apply('dark');
+            }
+            // Follow OS preference changes live (only when user has not set explicitly)
+            if (window.matchMedia) {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                var listener = function(e) {
+                    if (!localStorage.getItem(KEY)) apply(e.matches ? 'dark' : 'light');
+                };
+                if (mq.addEventListener) mq.addEventListener('change', listener);
+                else if (mq.addListener) mq.addListener(listener);
+            }
+        } catch (e) {}
+    })();
+    </script>
+
+    <!-- safety: force-show content if main.js fails or resources hang (desktop keeps loading) -->
+    <script>
+    (function() {
+        var timer = setTimeout(function() {
+            var loading = document.getElementById('loading');
+            if (loading && loading.classList.contains('active')) {
+                loading.classList.remove('active');
+                document.querySelectorAll('.fade, .fade-scale').forEach(function(el) {
+                    el.classList.add('in');
+                });
+            }
+        }, 4000);
+        // Clear the timer if load event fires normally
+        window.addEventListener('load', function() { clearTimeout(timer); });
+    })();
+    </script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(http://corper.cn/view.php/b6c03b6f5e94c190cc221552f4524729.gif)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Fanchuanhaha</h5>
+          <a href="mailto:3098393078@qq.com" title="3098393078@qq.com" class="mail">3098393078@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                文章
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanchuanhaha" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://qm.qq.com/q/DTMDzZNZPa" target="_blank" >
+                <i class="icon icon-lg icon-qq"></i>
+                QQ群
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">云服务器强制安装windows</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header" style="background: linear-gradient(rgba(63,81,181,0.55), rgba(63,81,181,0.55)), url(http://corper.cn/view.php/aaa7ffb2f2785400cd4007243b9a8cad.jpg) center center / cover no-repeat;">
+
+    <div class="container fade-scale">
+        <h1 class="title">云服务器强制安装windows</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2026-04-26T05:27:47.075Z" itemprop="datePublished" class="page-time">
+  2026-04-26
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-number">1.</span> <span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%87%86%E5%A4%87"><span class="post-toc-number">2.</span> <span class="post-toc-text">准备</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%95%99%E7%A8%8B"><span class="post-toc-number">3.</span> <span class="post-toc-text">教程</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="post-toc-number">4.</span> <span class="post-toc-text">注意</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E8%B5%B7%E5%9B%A0"><span class="post-toc-number">5.</span> <span class="post-toc-text">起因</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-2026-04-26-云服务器强制安装windows"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">云服务器强制安装windows</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2026-04-26 13:27:47" datetime="2026-04-26T05:27:47.075Z"  itemprop="datePublished">2026-04-26</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>ps:语文太好了写出来的东西不堪入目全是<code>然后...</code>什么什么的，让ai优化了一下</p>
+<p>这算是一片如何在不支持windows安装的云服务器上安装windows的教程</p>
+<p>因为有些云服务提供商只让你安装linux</p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>1，一台是智简魔方创建的云服务器</p>
+<p>2，这台服务器本身不提供windows安装，支持就直接用官方就好</p>
+<p>3，救援系统可用</p>
+<p>4，ssh工具和一个脑子</p>
+<h1 id="教程"><a href="#教程" class="headerlink" title="教程"></a>教程</h1><p>进入救援模式</p>
+<p>执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash &lt;(curl -sL https://raw.githubusercontent.com/fanchuanhah/install-windows-in-unsupport-windows-server/refs/heads/main/install.sh)</span><br></pre></td></tr></table></figure>
+<p>退出救援模式</p>
+<p>没了</p>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><p>使用提供的脚本教程安装的任何后果均与本作者无关<br>会清除全部数据</p>
+<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>我有一台闲置的香港16-16</p>
+<p>于是我就想着我要怎么装上windows</p>
+<p>研究这个我也是百板挫折（想看安装过程翻到下面就行）</p>
+<p>一开始我想到的是ddwindow</p>
+<p>然后我发现不行一直无限重启</p>
+<p>然后我把win的iso烧录到本地然后从grub启动，结果还是不行</p>
+<p>然后我又想到了救援系统</p>
+<p>我进到救援系统后我想着我用qemu启动windows的iso镜像，然后挂载磁盘，安装完成后再退出不就行了，我试了下，md，这个centos的包管理还是坏的，修又花了好多时间</p>
+<p>终于安装完windows后我退出救援系统，还是不行一开机就蓝屏，但至少是开了，也证明救援系统这条路可行</p>
+<p>然后我又进到救援系统，挂载磁盘，qemu启动，然后我想着应该是要在本地安装，而不是用qemu安装<br>系统都启动不了怎么在本地安装，我又想到了pe，毕竟都蓝屏了就说明过了引导了，那我引导pe不就行了</p>
+<p>然后我试了一下，用qemu启动后安装了firpe，安装完退出救援模式，到了引导，我选了firpe<br>wc了，竟然真的启动进去了，我给提前下好的系统镜像挂载安装了然后重启<br>然后呢，出现了蓝色的windows标，竟然出现了锁屏菜单（我跳过了obee），but，没网，pe也没网，我又尝试安装万能网卡驱动，md还是不行，各种驱动都试了，还是不行（魔方创建的应该是要特殊的网卡驱动）</p>
+<p>等等，魔方？let me think think。魔方是怎么创建一台云服务器的呢，分配一个磁盘文件，将镜像写入进去然后其他什么的</p>
+<p>镜像？我为什么不能自己将windows的镜像写入进去呢</p>
+<p>于是我从网上找到了魔方的windows qcow2的文件，进到救援模式</p>
+<p>用qemu img写入镜像，退出救援模式，进入vnc，没有蓝屏，进到了锁屏界面，右下角显示有网</p>
+<p>你以为成功了吗</p>
+<p>我一看，诶锁屏密码，这东西还有密码的，md，魔方有什么神秘的安装方式给你修改了密码，原始的windows镜像有密码的</p>
+<p>似乎再次陷入僵局，诶，我在救援系统里难道不能清除密码吗？</p>
+<p>答案是可以，网上搜到了一个叫chntpw的工具，是kali linux自带的</p>
+<p>问题是这东西是debian的，centos我貌似是找不到，然后最后还是在一个用php3，下载链接还是ftp协议的网站上找到了</p>
+<p>我下下来，然后安装，md报错，要低版本的那个so什么，然后我又找半天找到了这个低版本的so<br>安装好chntpw，我又给windows的磁盘挂载了，用chntpw清除了密码</p>
+<p>再次退出救援系统，激动人心的时候到了，引导界面，windows加载界面，没有锁屏，直接进入到了桌面，网卡驱动是好的</p>
+<p>终于，终于安装好了</p>
+<p>这可以说是历尽磨难，然后我发现还有些小问题</p>
+<p>就是因为是直接将qcow2文件写入整个磁盘的</p>
+<p>会只有那点空间，40gb剩下20gb没有分配</p>
+<p>可以直接右键此电脑，点击管理，给那个分区扩展就行了</p>
+<p>但是这东西也可以在救援系统里面完成，后面的就非常简单了</p>
+<p>安装好之后，我就想着，我要能自动安装就好了，然后就把方法告诉让ai生成了个代码一键安装，deepseek生成了好几次才生成了个能用的</p>
+<p>github项目地址：<a target="_blank" rel="noopener" href="https://github.com/fanchuanhah/install-windows-in-unsupport-windows-server">https://github.com/fanchuanhah/install-windows-in-unsupport-windows-server</a></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2026-06-21T11:46:01.894Z" itemprop="dateUpdated">2026-06-21 19:46:01</time>
+</span><br>
+
+
+        
+        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/" target="_blank" rel="external">http://example.com/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/</a>
+        
+    </div>
+    
+    <footer>
+        <a href="http://example.com">
+            <img src="https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" alt="Fanchuanhaha">
+            Fanchuanhaha
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">mix-space-shiro安装教程</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2026/04/26/2026-04-26-debianubutnu%20%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E6%A1%8C%E9%9D%A2vnc%E7%AD%89/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">debian/ubutnu 一键安装桌面vnc等</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.jpg" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.jpg" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv">
+        站点总访客数：<span id="busuanzi_value_site_uv">114514</span>
+    </span>
+    <span id="busuanzi_container_site_pv">
+        站点总访问量：<span id="busuanzi_value_site_pv">114514</span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Fanchuanhaha &copy; 2015 - 2026</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="qq share-sns" target="_blank" href="https://qm.qq.com/q/DTMDzZNZPa" data-title="加入QQ群">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD6ElEQVR42u3awW7bQAwEUP//T7tATwFa2TPkyjXQp1PgxNLu04Ehdx6P+Hr+vv78+ecnP6/kW1ffzb91dZ/X3z1w4cCBAweOYKvJsq5+e7WgnCx/evKSZk/BgQMHDhxnOU4V1/w+yQaS7bV3e7N3HDhw4MDxQY59YUsK86zk52UYBw4cOHB8G0feYiW/nQ0l263iwIEDB47Pc7THP+3wLiGeHUpthps4cODAgeMOjjsK3rf9/KF8Bw4cOHD89xzP9bU55pnFF9qxY7EXHDhw4MCx5mjbqvYvk6YuKe1nI91v7oMDBw4cOBYcbZggWei+1OXE+0HhY7YNHDhw4MARHzjlQYdZZO3Uxmal/c3acODAgQPHmmNW2BKmNpw9C0Ps28vL4SAOHDhw4Fhw5MG1tt9pifOnt+vJyzwOHDhw4NhwtMdLbTRtVno3TV0yFrx8Lg4cOHDgOMrR5iBeN3L7T3LinO/NK8SBAwcOHGuOTXOVl7EZfTKIPBuhwIEDBw4cpzgOND+jv2lL7CwM0R5K4cCBAweODcdmuUnE4VQpbSMR+ec4cODAgePzHJtjpJz19ROT4EKLXnSxOHDgwIFjwTEroveFGPLw9D5mgQMHDhw49hyzQjhrnzbFdfPPwTCujQMHDhw4Fhz7I5xZJC5vsdpB4bCFw4EDBw4ch6ZhScHLtzobF+YhvP1rW1V4HDhw4MARc3z0gKeMHWz+IXi9qr8EGnDgwIEDx5pjNmjLH7MfF27qY3GchgMHDhw4jnIkYeg2V9ai70tvHrx+U2hx4MCBA8eCow2itSVtRrw/9MpHmThw4MCB4yxHXkpXo7eyrapzGTHQsUw6Dhw4cOC44GhHeMkBVRtuaNvC/Xpw4MCBA8d9HHkcIS+EswavHVYm68/Hizhw4MCBY8/R3jRv7WZk+2LfxjIe+YQSBw4cOHCsY2fJY2ZLzwtnjpXHxAt6HDhw4MBxlKMtny3rpjzvX1L0wnDgwIEDx4hj02i1m0maxjZIsblP1KHiwIEDB46YI487z4Zus5hdG5VrD6tw4MCBA8fdHJvjpVkYruWrQwmzO+DAgQMHjjVH23RtWr5ZwGJzn9lTcODAgQPH5inP8np909lhz2yYeDYAgQMHDhw4TnHMxnyzOFoemDh7fHVHkcaBAwcOHG3BG0aW15s5WyCH98GBAwcOHIc4kkOgWRS7be2SIp0fVtVtJw4cOHDg+EqOWfPWht5m4ex/UGhx4MCBA8ci0NCiJC3c7NCrDQLiwIEDB46zHO1wcBbg3gTs2kOmfBdFYA4HDhw4cHTJtyjQ0LZJs2xFcmSVByOKQosDBw4cOOYcvwDbg1lzxJoPgQAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="/js/main.min.js?v=1.7.2"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.7.2" async></script>
+
+
+
+
+
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
