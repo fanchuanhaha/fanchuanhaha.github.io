@@ -281,29 +281,48 @@
 
             
 <div class="page-share-wrap">
-    
-
-<div class="page-share" id="pageShare">
+    <div class="page-share" id="pageShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/&title=《小米2/2s纯卡刷教学》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/&title=《小米2/2s纯卡刷教学》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
     <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
         <i class="icon icon-share-alt icon-lg"></i>
@@ -319,7 +338,7 @@
 <nav class="post-nav flex-row flex-justify-between">
   
     <div class="waves-block waves-effect prev">
-      <a href="/2026/02/16/2026-02-16-hello2%20-%20%E5%89%AF%E6%9C%AC/" id="post-prev" class="post-nav-link">
+      <a href="/2026/02/16/2026-02-16-hello/" id="post-prev" class="post-nav-link">
         <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
         <h4 class="title">hello</h4>
       </a>
@@ -425,35 +444,48 @@
     <div class="mask" id="mask"></div>
 <a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
 
-
-
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/&title=《小米2/2s纯卡刷教学》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B322s%E7%BA%AF%E5%8D%A1%E5%88%B7%E6%95%99%E5%AD%A6/&title=《小米2/2s纯卡刷教学》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
-<div class="page-modal wx-share" id="wxShare">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD6klEQVR42u3by27iQBAFUP7/p5ltpARzb1WbZKTDCoFNdx8vKvXI4xG/nl9e+bdfP3l+e7265tX1+e9///bwCwcOHDhwxEe93vT1YpunkUBc7yrZbUKMAwcOHDhOcSRbTGiuUZJ7r4N6C5qfEQcOHDhw/C5Hfn1ygHbFNvDjwIEDB47/iyMv6uVM+ytx4MCBA8fvcuTHaL/NC3bJrtry3421Uhw4cODAMam5FUH3L7+/Zb4DBw4cOHCUU2F3BLnr1dsxhcOnw4EDBw4cZwLFqmDXjg5s2lH5I1mdCwcOHDhw3NXTGQ5nt2N2ybqzK5O9HUvwcODAgQNHkHq1JcJ8+RwoH6SIhhWufwcHDhw4cNzGkY8CtMlbe1cO0RYZf7gLBw4cOHDcwHGqYLcJvbPmVt7QelMlxYEDBw4ca448uWrLcBumfSrYJqg4cODAgWPPMRssSMYCkvfJwfYjC4cHGnDgwIEDx+XO240m6dYstdvTb/hw4MCBA8cpjk2zJ0/DZuNubQNpRoYDBw4cOD7D0YarNpTui3r7cYqieooDBw4cOGKOPCjOPk+Kd/k1beuoZsWBAwcOHEc5DkTpUder5WiPmre+cODAgQPHnqMNePuUrw29bUNrtvMf7sWBAwcOHAuOdrG81dSWFHP0vJlUY+HAgQMHjqMceQqUJ3uz90k5chbg36yFAwcOHDgWa7WDBbOkaxaS8xU3+y8GGnDgwIEDRzyBcEeJrW7zjAqOHy0O4sCBAweOxbxZ3uy5PvBskC4fp5glkMPhBhw4cODAEe98loC1G9q0jvLDtEXMIq/FgQMHDhwxR368PEnLC3Mt036coihE4sCBAweOBUeekrVDA7M21alxigQx2iIOHDhw4Ag4bhwLaCP8oji42efLXBYHDhw4cCw4TjV4coJ2HGFfrIwePw4cOHDgWHPMht6SQ84+z5tMOXq+Ig4cOHDg2HO0FcT9uMMsKO4LhckfBDhw4MCBY8+RB9q8/DcbgDtbncsf2KN98jhw4MCB47n9j8h2cK1tX22KiXnhL3qoOHDgwIHjEMem2bMJz8m9SSKXFxbr4iAOHDhw4BhFxlnC0yZRyeDC5nj577+5CwcOHDhwLDg2bZuihbMI0u01edNr9YRx4MCBA8f61W5oM6YwKwi2za1Z+MeBAwcOHAnHfuGktnZqhOI6eB8ItDhw4MCB4xBHOwbXDl63TLMRh/ZPBxw4cODA8Rc42jA2S73aX549gJcDDThw4MCB44Mcs4NtDtz+/qzRhQMHDhw4znLM2kj5t7OULzlSu6tjbSccOHDgwLEeaNgPHyRkeaGwfQxRoMWBAwcOHHOOf6ZNxQfoD2MDAAAAAElFTkSuQmCC" alt="微信分享二维码">
-</div>
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
 
 

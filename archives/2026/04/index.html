@@ -293,35 +293,48 @@
     <div class="mask" id="mask"></div>
 <a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
 
-
-
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/archives/2026/04/&title=Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/archives/2026/04/&title=Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
-<div class="page-modal wx-share" id="wxShare">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAABxElEQVR42u3ay07DUAwFwP7/TweJbaEc2/FVhOauUJs0ExaWX69XfK7v8/7J+3n/9vNdr42Di4s75l4fT/KY5N7frs8NuLi457mfg1ceehJ08kq/fo6Li/swbpK+5Pfi4uL+J25yb14y4eLiPpk7KWB67Y/1Wg0XF3fArTZMN/5e7O/i4uIWuVfx5E3SJHEpPx0XF/cId1KQ9MqePIQVMjJcXNwFbjL+nLRBby5scHFxl7m90Wm1dKmOWqPkBhcX9yA3WaKaDF2SFmqUi+Hi4h7kJsSEXm2RRGUYLi7uEW4V13uxfCk8+qfg4uIuc/Of66Um1bXOcgjDxcVd4PaKmXyRq1cyldupuLi4a9xq2zS/vtce/SOc4eLiLnOTS/PUpAcqtGhxcXGXuZOQVE1lyiPVaqsUFxd3jdtb2s7ToKRRcttMGBcXt8WtrmHlj+8NaHv5DC4u7r3cq3h6i1bz1AcXF/ckNz/VdmpvJWsS+HBxce/lbg9N7yqTcHFxz3N7TdLyw1qh84e8DBcX9zHcZD0iebHRIBYXF/eR3Lx1krdQC2vcuLi4B7nV4mdS6ozKJ1xc3CPcecO0GtSqv1Cm4+Li9rlfPpDsC+ioySsAAAAASUVORK5CYII=" alt="微信分享二维码">
-</div>
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
 
 

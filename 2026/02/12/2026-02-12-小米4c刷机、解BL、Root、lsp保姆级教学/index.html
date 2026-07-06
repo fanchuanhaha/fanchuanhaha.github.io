@@ -444,29 +444,48 @@
 
             
 <div class="page-share-wrap">
-    
-
-<div class="page-share" id="pageShare">
+    <div class="page-share" id="pageShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/&title=《小米4c刷机、解BL、Root、lsp保姆级教学》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/&title=《小米4c刷机、解BL、Root、lsp保姆级教学》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
     <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
         <i class="icon icon-share-alt icon-lg"></i>
@@ -581,35 +600,48 @@
     <div class="mask" id="mask"></div>
 <a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
 
-
-
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/&title=《小米4c刷机、解BL、Root、lsp保姆级教学》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/02/12/2026-02-12-%E5%B0%8F%E7%B1%B34c%E5%88%B7%E6%9C%BA%E3%80%81%E8%A7%A3BL%E3%80%81Root%E3%80%81lsp%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%95%99%E5%AD%A6/&title=《小米4c刷机、解BL、Root、lsp保姆级教学》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
-<div class="page-modal wx-share" id="wxShare">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT4AAAE+CAAAAAAxUyPsAAAFRElEQVR42u3bwW7rSAwEQP//T2evD1g46WbLuaR0CmDZGtUcRDWZ1ys+vt4c/376/Znfn///v/P1tGv4/szXJw58+PDhw4cvoLmhJBzJL3+/wndXfHfd74Fu94sPHz58+PAtfMlNtgvKz0++lXw32cKnNh4fPnz48OH7Tb7k5f+pIibfjGQDlvACHz58+PDh+32+4qcDoDym34ueNozAhw8fPnz4PseXP+Db5bYlSHJ+u21tJPGRXgc+fPjw4cNXTmH9nb8/Mt+HDx8+fPj+PN9XeTz1yF8a3m24cCuVIg18+PDhw4fvpJEvKF9WXhzcXsVvQ2btUF1yXXz48OHDh+9ZvvzBvzcA9uG2ZZ15EfNY9x4fPnz48P0xvra8WBrbeVyeD7TtI2tL+xwfPnz48OFbEu88fM9Zc76kdLjFGXupFBVS+PDhw4cP39fhf5NfSwFxu3z+aRJA5CVIvlXT4Bo+fPjw4cMXD4QlnyZFTPIL+Wv8s2F9W9zgw4cPHz58z/K1r9ZtGZQvri2P2vXsgwL48OHDhw9fe34emufFwVNweUCQl1b5Bh8H1PDhw4cPH76YL4m895igLT6WOKMN4uvGAz58+PDhw3fpWR8b1e1reXtOWza1G7wXSfjw4cOHD1/L1w6K3QbObi3q5e9bM6BtG+DDhw8fPnwt36eb3Lc44BbE78NwbfmCDx8+fPjwtXx7WL9T5jR5QH8rO/IxOHz48OHDh2/na8P69vFfDH6dmgS3QbcHGuT48OHDhw9fl6LXr/G3NvatjGi3cFlJXrq9RcSHDx8+fPhivuS1fFnuEjQUr/HBp7dI4ocSCh8+fPjw4Sv7vHX/vIzRbzeWt8PbQiq/37ffwocPHz58+IbZrWWirX2Nz5vZ+zbkMUce6L9uU2/48OHDhw9f2Szfi4/85fzZIKAdwivaEvjw4cOHD9+JLy9c2lGwZbkJQVtwLIULPnz48OHDt/BFM2tDuNBG4XsrPSmVXvOBDx8+fPjw3fj2tvdevrTb8yzfcr/48OHDhw9fy7e0xm+DX1+no335b9Gn0XB8+PDhw4ev5Msf5O2wWv6bbZP+E+32/IqvWx2EDx8+fPj+PN9t2Kvla4OJtrBoG+Rt+3/L7/Hhw4cPH76fw+4Ea1lcWwDdfu2pIba3V8GHDx8+fPgu2fVxBPzWKV6a6EnA8dRQXXEtfPjw4cOHL+a7vaLnT+12cW2RtJQpe9MCHz58+PDha/mWsuBWarRt79tY223c/BYu4MOHDx8+fDnf8lBfLv+Kj6VtcBtuS7bhWAHhw4cPHz58QfGxLzG/jdvN5xuThyPRpuLDhw8fPnwl3zIKlgf9t9HzT9C00fxxygAfPnz48OGLJ6zaR3heatzCiLznsDQGWsoiO8GHDx8+fPhijrwUyG/g9ulTI2V7SRR9Cx8+fPjw4Qu+VT+eTwu9nXkriZK2ehvfF/N9+PDhw4cP3yudbV5e3fOyY2nS3wbmHo4/8OHDhw8fvhNfXt3UHfhTS3svkvJ4YlotPnz48OHDN/PdSpb8NTtveCfFyhIQ5AXQ26vgw4cPHz5897f7IpTfL5lw5y/wt1GzvPy6Ndfx4cOHDx++d9+9DXLte7VE+Ush1f7CD5/iw4cPHz58J75bwzgJ69uN2QfjlkZCG/fjw4cPHz58v8nXFiV7kyCJ+POYPrmvH2J6fPjw4cOH78N8+aP9FkPcSqI2nrhtGD58+PDhw/cUX3KryZDWLe7Pv5uvMI/p81VNbXJ8+PDhw4dvCKlb9HZBeSiQrPO2nnzkDh8+fPjw4QvO/A+nv359XY3j0gAAAABJRU5ErkJggg==" alt="微信分享二维码">
-</div>
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
 
 

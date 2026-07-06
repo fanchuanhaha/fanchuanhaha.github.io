@@ -318,32 +318,6 @@
         <div class="waterfall-item">
   <article class="article-card archive-article">
     <div class="post-meta">
-      <time class="post-time" title="2026-02-16 12:35:23" datetime="2026-02-16T04:35:23.047Z"  itemprop="datePublished">2026-02-16</time>
-
-      
-
-
-    </div>
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2026/02/16/2026-02-16-hello2%20-%20%E5%89%AF%E6%9C%AC/">hello</a>
-    </h3>
-  
-
-
-
-    
-  </article>
-</div>
-
-    
-
-        <div class="waterfall-item">
-  <article class="article-card archive-article">
-    <div class="post-meta">
       <time class="post-time" title="2026-02-12 15:01:53" datetime="2026-02-12T07:01:53.731Z"  itemprop="datePublished">2026-02-12</time>
 
       
@@ -431,35 +405,48 @@
     <div class="mask" id="mask"></div>
 <a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
 
-
-
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/archives/&title=Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/archives/&title=Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
-<div class="page-modal wx-share" id="wxShare">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAAByUlEQVR42u3aOW7EMAwFUN//0k6TIkAQzycpKTPAU+XCy4MLgtt1xef+4zzfmbzt2nFwcXHH3Pvx/Lzn91NVYvKGFz8FFxf3IPf5A0kIe352fg8uLu77cyepTBIocXFxP4Vbvc4LJFxc3PfkJsVPkvQk5VPy1IJaDRcXd8DNu5T7rrf0d3FxcVvcu3Xy8mbVF7/fhouLe4TbK2bywJQnMUkChIuLe56bQ/Pg1QtwLxoruLi4B7n54lQSvHptlKgowsXF3cztJRx56Fl8jYuLe4TbG2PkLY/ekveCcIaLizvmTlayJuXNpPGKi4u7m5sHryQZyp+tLnri4uL+Fzf/zCQNylOiaJSCi4u7gbuvsJmPYAu5GC4u7iJuHsLyAUxvSBOlTbi4uEe4eTKRty+rIa/8RVxc3M3c3lJmdfnyik80E8bFxd3MfQYlMaSaGPVCIS4u7knuXTxJeNpS8FTjKC4u7oDbCy7lsWjcMO2VW7i4uDu4vZXuKq7a2Rgtc+Pi4i7iVhup+fpmNX3BxcX9LO6k7MlXuwpdHFxc3DfgznHV1uqLUSsuLu5m7mR1u7eK0dupwMXFPcPtLUZURy/VNfEF/V1cXNwO9wuMMwYcz+e4agAAAABJRU5ErkJggg==" alt="微信分享二维码">
-</div>
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
 
 

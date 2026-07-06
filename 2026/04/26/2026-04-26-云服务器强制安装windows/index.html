@@ -314,29 +314,48 @@
 
             
 <div class="page-share-wrap">
-    
-
-<div class="page-share" id="pageShare">
+    <div class="page-share" id="pageShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/&title=《云服务器强制安装windows》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/&title=《云服务器强制安装windows》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
     <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
         <i class="icon icon-share-alt icon-lg"></i>
@@ -458,35 +477,48 @@
     <div class="mask" id="mask"></div>
 <a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
 
-
-
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/&title=《云服务器强制安装windows》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/04/26/2026-04-26-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%BA%E5%88%B6%E5%AE%89%E8%A3%85windows/&title=《云服务器强制安装windows》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
-<div class="page-modal wx-share" id="wxShare">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD6ElEQVR42u3awW7bQAwEUP//T7tATwFa2TPkyjXQp1PgxNLu04Ehdx6P+Hr+vv78+ecnP6/kW1ffzb91dZ/X3z1w4cCBAweOYKvJsq5+e7WgnCx/evKSZk/BgQMHDhxnOU4V1/w+yQaS7bV3e7N3HDhw4MDxQY59YUsK86zk52UYBw4cOHB8G0feYiW/nQ0l263iwIEDB47Pc7THP+3wLiGeHUpthps4cODAgeMOjjsK3rf9/KF8Bw4cOHD89xzP9bU55pnFF9qxY7EXHDhw4MCx5mjbqvYvk6YuKe1nI91v7oMDBw4cOBYcbZggWei+1OXE+0HhY7YNHDhw4MARHzjlQYdZZO3Uxmal/c3acODAgQPHmmNW2BKmNpw9C0Ps28vL4SAOHDhw4Fhw5MG1tt9pifOnt+vJyzwOHDhw4NhwtMdLbTRtVno3TV0yFrx8Lg4cOHDgOMrR5iBeN3L7T3LinO/NK8SBAwcOHGuOTXOVl7EZfTKIPBuhwIEDBw4cpzgOND+jv2lL7CwM0R5K4cCBAweODcdmuUnE4VQpbSMR+ec4cODAgePzHJtjpJz19ROT4EKLXnSxOHDgwIFjwTEroveFGPLw9D5mgQMHDhw49hyzQjhrnzbFdfPPwTCujQMHDhw4Fhz7I5xZJC5vsdpB4bCFw4EDBw4ch6ZhScHLtzobF+YhvP1rW1V4HDhw4MARc3z0gKeMHWz+IXi9qr8EGnDgwIEDx5pjNmjLH7MfF27qY3GchgMHDhw4jnIkYeg2V9ai70tvHrx+U2hx4MCBA8eCow2itSVtRrw/9MpHmThw4MCB4yxHXkpXo7eyrapzGTHQsUw6Dhw4cOC44GhHeMkBVRtuaNvC/Xpw4MCBA8d9HHkcIS+EswavHVYm68/Hizhw4MCBY8/R3jRv7WZk+2LfxjIe+YQSBw4cOHCsY2fJY2ZLzwtnjpXHxAt6HDhw4MBxlKMtny3rpjzvX1L0wnDgwIEDx4hj02i1m0maxjZIsblP1KHiwIEDB46YI487z4Zus5hdG5VrD6tw4MCBA8fdHJvjpVkYruWrQwmzO+DAgQMHjjVH23RtWr5ZwGJzn9lTcODAgQPH5inP8np909lhz2yYeDYAgQMHDhw4TnHMxnyzOFoemDh7fHVHkcaBAwcOHG3BG0aW15s5WyCH98GBAwcOHIc4kkOgWRS7be2SIp0fVtVtJw4cOHDg+EqOWfPWht5m4ex/UGhx4MCBA8ci0NCiJC3c7NCrDQLiwIEDB46zHO1wcBbg3gTs2kOmfBdFYA4HDhw4cHTJtyjQ0LZJs2xFcmSVByOKQosDBw4cOOYcvwDbg1lzxJoPgQAAAABJRU5ErkJggg==" alt="微信分享二维码">
-</div>
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
 
 

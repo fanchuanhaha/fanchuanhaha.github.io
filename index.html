@@ -375,50 +375,6 @@ https://blog.xp6.top/posts/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/91
         </li>
     
         <li class="post-list-item fade">
-            <article id="post-2026-02-16-hello2 - 副本"
-  class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2026-02-16 12:35:23" datetime="2026-02-16T04:35:23.047Z"  itemprop="datePublished">2026-02-16</time>
-
-        
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/2026/02/16/2026-02-16-hello2%20-%20%E5%89%AF%E6%9C%AC/">hello</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        大家好啊我是fanchuanhaha
-其实我很早以前就有搭建博客的想法我也搭了
-点击前往我的博客
-我想写一下生活上的，就像我朋友那样，但是我这个人有亿点点社恐哪怕是网上，哪怕一天访问量就十几个人我也不敢，所以我就搭建了这一个，blo.802213.xyz，一般人应该找不到awa
-这个博客我想不单单发布一些技术之类的我要发日常相关的，反正没人看，当然也可能带着亿点点负面情绪。。。反正没人看
-好...
-    
-
-        <a href="/2026/02/16/2026-02-16-hello2%20-%20%E5%89%AF%E6%9C%AC/" class="post-more waves-effect waves-button">
-            阅读全文…
-        </a>
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
             <article id="post-2026-02-12-小米22s纯卡刷教学"
   class="article-card article-type-post" itemprop="blogPost">
 
@@ -551,35 +507,48 @@ https://blog.xp6.top/posts/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/91
     <div class="mask" id="mask"></div>
 <a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
 
-
-
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/&title=Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/&title=Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
-<div class="page-modal wx-share" id="wxShare">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAABVElEQVR42u3awQrCMBBF0f7/T0dwJRTT+yZVMXOzEizhdJFp8ibHgcd4jvm/r8+M0zg+MWTJ2og1puPMuuvfC7osWS1Z86JAnpm/ajyPLFmywMJOP+SyZMn6VYGQJUtWyiKbZn4c5fPcsJeXJWsLVhokrfz+YL4lS9bfskZppKB4flmymrHehbDrjRbegEFlQpasrVl8U1t7mdpWW5asbiweG5HjKJ8neD1ZshqweAngUSxHF/cOsmRtykrjnvQTHke6smQ1Y/HQNgiAQDYblA9ZspqxahcLVlZ0sbcjS9amrJU4aeUaAapYsmQ1ZvGD6Eo1uoiZZMlqwypeBQibnfGmWZasZqz1S3j8mFrs+ciS1YaVXrlL+yDFAiFLVkvWl5Iq3qqRJUvWTYs/bYLKkiWLH0H5xQIeVMmSJYtvmnmkmzZXZMmStX4RgS/+2gvIkrU16wFzaqZ+fkfvKgAAAABJRU5ErkJggg==" alt="微信分享二维码">
-</div>
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
 
 

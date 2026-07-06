@@ -56,7 +56,7 @@
 <meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_22-07-07.png">
 <meta property="og:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_12-04-37.png">
 <meta property="article:published_time" content="2026-05-04T06:04:44.637Z">
-<meta property="article:modified_time" content="2026-07-06T14:39:41.643Z">
+<meta property="article:modified_time" content="2026-07-06T15:23:22.568Z">
 <meta property="article:author" content="Fanchuanhaha">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://tp.802213.xyz/uploads/SnowShot_2026-05-03_21-32-21.png">
@@ -502,7 +502,7 @@
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2026-07-06T14:39:41.643Z" itemprop="dateUpdated">2026-07-06 22:39:41</time>
+    最后更新时间：<time datetime="2026-07-06T15:23:22.568Z" itemprop="dateUpdated">2026-07-06 23:23:22</time>
 </span><br>
 
 
@@ -531,29 +531,48 @@
 
             
 <div class="page-share-wrap">
-    
-
-<div class="page-share" id="pageShare">
+    <div class="page-share" id="pageShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/&title=《mix-space-shiro安装教程》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/&title=《mix-space-shiro安装教程》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
     <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
         <i class="icon icon-share-alt icon-lg"></i>
@@ -668,35 +687,48 @@
     <div class="mask" id="mask"></div>
 <a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
 
-
-
 <div class="global-share" id="globalShare">
     <ul class="reset share-icons">
       <li>
-        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://example.com/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/&title=《mix-space-shiro安装教程》 — Fanchuanhaha's Blog&pic=https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640" data-title="微博">
-          <i class="icon icon-weibo"></i>
-        </a>
-      </li>
-      <li>
-        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
-          <i class="icon icon-weixin"></i>
-        </a>
-      </li>
-      <li>
-        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://example.com/2026/05/04/2026-05-04-mix-space-shiro%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/&title=《mix-space-shiro安装教程》 — Fanchuanhaha's Blog&source=" data-title=" QQ">
-          <i class="icon icon-qq"></i>
+        <a class="qq share-sns" href="javascript:;" data-title="复制链接" onclick="copyArticleLink(this)">
+          <i class="icon icon-link"></i>
         </a>
       </li>
     </ul>
  </div>
 
-
-<div class="page-modal wx-share" id="wxShare">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADHUlEQVR42u3aS5LiUAwEwL7/pZlNb4EqPRPTFukVwccmzUKopJ+f+Hi8PF6/89nZ2uu2r15wYGNjY9+EnZDyZ57BkjO/BiTXyn8ebGxs7H3s/DJJXTgvVM9uXP74jREbGxv7i9mP+Hj9/uTVk1uAjY2NjZ2XkzY2ygOpNlTCxsbG/mZ2Umba29GGUMnt+A9ZGjY2NvafZ59ERX/t8Ufm29jY2Nh/mP0oj7YUtUs8+aLPLOT6/RQ2Njb2InZeANplyjY2mpXMo++PjY2NvYLdfiAPaNrVzKui/+iK2NjY2IvYs2gpaU5OMpzZeKD9FDY2NvYOdlKQZpfM25hrQ6XozNjY2Njr2DNM0qjkQ4XZmmZyU96EStjY2Ng3Z+dBfx4wJYPek+HxVQud2NjY2PvYSavQthbJ5U+GxLMACxsbG3s3uy0zs6LVrlG25bMYUWNjY2OvYM8Y7b/6C2L9S1eCsLGxsXewk4/NQv/2mWtbkTfvx8bGxl7EngXxswvnN3fGTgbJb35zbGxs7JuzZ8PU2Xi4XceZfc83xRIbGxt7HXu2dnm+gnnVan4dM2FjY2MvYre881XLdlWoLVpDKjY2NvZt2XmknnzFdhx7Xq6GA2NsbGzs1ey2hOSPz0fFeWxULF9iY2NjL2LPOpg24r82wBq2JdjY2Njr2G3ZyP/0J6Pidt1nFophY2Nj72aflK48hJrFQ1ct67xpRbCxsbFvyD4Jd9oSksdPCftkVIyNjY29j/2JRZx2+WYWb7UDCWxsbOx97NkYtR24fq45OUqKsLGxsdexT8pPvtaTLwbNmpmi3GJjY2N/DTsPgE5GxclVTtjRVAQbGxt7BXu2oHPy6qzxaFc2ozuNjY2NfUP2ozzOI/v2PNeWSWxsbOx97NnazWzcO1vHace67XACGxsbewc7wbRlpm0hXr+zbWyigTE2Njb2OnZeMNrR7FVD4lnJfHrjsLGxsb+e/YlAp211TobQ2NjY2Niz4H64XvPy/O2txMbGxt7KzhuGthWZDW7Pl4Si5UtsbGzsFey8Sbh29acd7p4PhrGxsbHXsf8B7JcCXZneRXYAAAAASUVORK5CYII=" alt="微信分享二维码">
-</div>
-
+<script>
+function copyArticleLink(btn) {
+    var url = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            var tip = btn.querySelector('.copy-tip');
+            if (!tip) {
+                tip = document.createElement('span');
+                tip.className = 'copy-tip';
+                tip.style.cssText = 'margin-left:6px;font-size:12px;color:#3F51B5;';
+                btn.appendChild(tip);
+            }
+            tip.textContent = '已复制';
+            setTimeout(function() { tip.textContent = ''; }, 2000);
+        }).catch(function() { fallbackCopy(url, btn); });
+    } else {
+        fallbackCopy(url, btn);
+    }
+}
+function fallbackCopy(url, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        btn.querySelector('.copy-tip') && (btn.querySelector('.copy-tip').textContent = '已复制');
+    } catch(e) {}
+    document.body.removeChild(ta);
+}
+</script>
 
 
 
