@@ -324,23 +324,13 @@
                 }
             }
 
-            // 拦截标签链接点击 - 用 mousedown 避免 Waves 包装干扰
-            tagsBar.addEventListener('mousedown', function (e) {
-                // 排除 PC show more 按钮
-                if (e.target.closest('.tags-list-more')) return;
+            // 提取 fetch 切换逻辑为独立函数（同时供桌面和移动端使用）
+            function switchToTag(targetUrl, link) {
+                if (isLoading) return;
+                if (link && link.classList.contains('active')) return;
 
-                // 用 closest 找 a 标签（兼容 Waves 包装）
-                var link = e.target.closest('a.tags-list-item');
-                if (!link || !link.href || isLoading) return;
-
-                // 如果已经是当前页面，不处理
-                if (link.classList.contains('active')) return;
-
-                e.preventDefault();
-                e.stopPropagation();
+                e_prevent();
                 isLoading = true;
-
-                var targetUrl = link.href;
 
                 // 添加加载指示
                 loading.classList.add('active');
@@ -395,22 +385,47 @@
                             location.href = targetUrl;
                         });
                 }, 300);
-            }, true); // 使用捕获阶段
+            }
 
-            // 兼容移动端
-            tagsBar.addEventListener('touchstart', function (e) {
-                if (e.target.closest('.tags-list-more')) return;
-                var link = e.target.closest('a.tags-list-item');
+            // 简单的阻止默认事件
+            function e_prevent() {
+                if (window.event) {
+                    window.event.preventDefault();
+                    window.event.stopPropagation();
+                }
+            }
+
+            // 用 pointerdown 统一处理桌面和移动端，捕获阶段
+            function handlePointer(e) {
+                // 排除 PC show more 按钮
+                if (e.target.closest && e.target.closest('.tags-list-more')) return;
+
+                // 用 closest 找 a 标签
+                var link = e.target.closest ? e.target.closest('a.tags-list-item') : null;
                 if (!link || !link.href || isLoading) return;
+
+                // 如果已经是当前页面，不处理
                 if (link.classList.contains('active')) return;
+
                 e.preventDefault();
                 e.stopPropagation();
-            }, true);
+                if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+
+                switchToTag(link.href, link);
+            }
+
+            // pointerdown：现代浏览器（桌面+移动）统一入口
+            if (w.PointerEvent) {
+                tagsBar.addEventListener('pointerdown', handlePointer, true);
+            } else {
+                // 老浏览器兜底
+                tagsBar.addEventListener('mousedown', handlePointer, true);
+                tagsBar.addEventListener('touchstart', handlePointer, true);
+            }
 
             // 处理浏览器后退/前进
             w.addEventListener('popstate', function (e) {
                 if (e.state && e.state.tagSwitch && e.state.url) {
-                    // 重新加载该 URL
                     isLoading = true;
                     loading.classList.add('active');
                     bodyWrap.classList.remove('in');
