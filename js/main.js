@@ -288,6 +288,159 @@
         tabBar: function (el) {
             el.parentNode.parentNode.classList.toggle('expand')
         },
+        smoothTags: function () {
+            // 只在标签/分类页面启用
+            var tagsBar = $('.tabs-bar');
+            if (!tagsBar) return;
+
+            var bodyWrap = $('.body-wrap');
+            if (!bodyWrap) return;
+
+            var isLoading = false;
+
+            // 规范化链接：去掉尾部斜杠，方便比较
+            function normalize(url) {
+                try {
+                    var u = new URL(url, w.location.origin);
+                    var path = u.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+                    return u.origin + path;
+                } catch (err) {
+                    return url.replace(/\/index\.html$/, '').replace(/\/$/, '');
+                }
+            }
+
+            // 统一设置 active 状态：先清空再设置
+            function setActiveByUrl(url) {
+                var all = tagsBar.querySelectorAll('.tags-list-item');
+                var normalizedTarget = normalize(url);
+                for (var i = 0; i < all.length; i++) {
+                    all[i].classList.remove('active');
+                }
+                for (var j = 0; j < all.length; j++) {
+                    if (normalize(all[j].href) === normalizedTarget) {
+                        all[j].classList.add('active');
+                        return;
+                    }
+                }
+            }
+
+            // 拦截标签链接点击 - 用 mousedown 避免 Waves 包装干扰
+            tagsBar.addEventListener('mousedown', function (e) {
+                // 排除 PC show more 按钮
+                if (e.target.closest('.tags-list-more')) return;
+
+                // 用 closest 找 a 标签（兼容 Waves 包装）
+                var link = e.target.closest('a.tags-list-item');
+                if (!link || !link.href || isLoading) return;
+
+                // 如果已经是当前页面，不处理
+                if (link.classList.contains('active')) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+                isLoading = true;
+
+                var targetUrl = link.href;
+
+                // 添加加载指示
+                loading.classList.add('active');
+
+                // 淡出当前内容
+                bodyWrap.classList.remove('in');
+
+                setTimeout(function () {
+                    fetch(targetUrl)
+                        .then(function (response) {
+                            return response.text();
+                        })
+                        .then(function (html) {
+                            // 解析返回的 HTML
+                            var parser = new DOMParser();
+                            var doc = parser.parseFromString(html, 'text/html');
+
+                            // 获取新的 body-wrap 内容
+                            var newBodyWrap = doc.querySelector('.body-wrap');
+                            if (newBodyWrap) {
+                                bodyWrap.innerHTML = newBodyWrap.innerHTML;
+                            }
+
+                            // 立即更新 active 状态
+                            setActiveByUrl(targetUrl);
+
+                            // 更新 URL
+                            history.pushState({ tagSwitch: true, url: targetUrl }, '', targetUrl);
+
+                            // 更新页面标题
+                            var newTitle = doc.querySelector('title');
+                            if (newTitle) {
+                                document.title = newTitle.textContent;
+                            }
+
+                            // 淡入新内容
+                            setTimeout(function () {
+                                bodyWrap.classList.add('in');
+                                loading.classList.remove('active');
+                                isLoading = false;
+
+                                // 重新计算瀑布流布局
+                                Blog.waterfall();
+
+                                // 滚动到顶部
+                                w.scrollTo(0, 0);
+                            }, 50);
+                        })
+                        .catch(function () {
+                            // 出错时回退到普通跳转
+                            isLoading = false;
+                            location.href = targetUrl;
+                        });
+                }, 300);
+            }, true); // 使用捕获阶段
+
+            // 兼容移动端
+            tagsBar.addEventListener('touchstart', function (e) {
+                if (e.target.closest('.tags-list-more')) return;
+                var link = e.target.closest('a.tags-list-item');
+                if (!link || !link.href || isLoading) return;
+                if (link.classList.contains('active')) return;
+                e.preventDefault();
+                e.stopPropagation();
+            }, true);
+
+            // 处理浏览器后退/前进
+            w.addEventListener('popstate', function (e) {
+                if (e.state && e.state.tagSwitch && e.state.url) {
+                    // 重新加载该 URL
+                    isLoading = true;
+                    loading.classList.add('active');
+                    bodyWrap.classList.remove('in');
+
+                    setTimeout(function () {
+                        fetch(e.state.url)
+                            .then(function (r) { return r.text(); })
+                            .then(function (html) {
+                                var doc = new DOMParser().parseFromString(html, 'text/html');
+                                var newBodyWrap = doc.querySelector('.body-wrap');
+                                if (newBodyWrap) {
+                                    bodyWrap.innerHTML = newBodyWrap.innerHTML;
+                                }
+                                setActiveByUrl(e.state.url);
+                                var newTitle = doc.querySelector('title');
+                                if (newTitle) document.title = newTitle.textContent;
+                                setTimeout(function () {
+                                    bodyWrap.classList.add('in');
+                                    loading.classList.remove('active');
+                                    isLoading = false;
+                                    Blog.waterfall();
+                                }, 50);
+                            })
+                            .catch(function () {
+                                location.href = e.state.url;
+                            });
+                    }, 300);
+                }
+            });
+        },
         page: (function () {
             var $elements = $$('.fade, .fade-scale');
             var visible = false;
@@ -468,6 +621,7 @@
 
     w.addEventListener('DOMContentLoaded', function () {
         Blog.waterfall();
+        Blog.smoothTags();
         var top = rootScollTop();
         Blog.toc.fixed(top);
         Blog.toc.actived(top);
