@@ -1,8 +1,8 @@
 (function () {
 
     var G = window || this,
-        even = G.BLOG.even,
-        $ = G.BLOG.$,
+        even = 'ontouchstart' in G && /Mobile|Android|iOS|iPhone|iPad|iPod|Windows Phone|KFAPWI/i.test(navigator.userAgent) ? 'touchstart' : 'click',
+        $ = G.BLOG.$ || function(selector) { return document.querySelector(selector); },
         searchIco = $('#search'),
         searchWrap = $('#search-wrap'),
         keyInput = $('#key'),
@@ -10,7 +10,8 @@
         searchPanel = $('#search-panel'),
         searchResult = $('#search-result'),
         searchTpl = $('#search-tpl').innerHTML,
-        JSON_DATA = (G.BLOG.ROOT + '/content.json').replace(/\/{2}/g, '/'),
+        ROOT = G.BLOG.ROOT || '/',
+        JSON_DATA = (ROOT + '/content.json').replace(/\/{2}/g, '/'),
         searchData;
 
     function loadData(success) {
@@ -47,7 +48,7 @@
         });
     }
 
-    var noop = G.BLOG.noop;
+    var noop = function() {};
     var root = $('html');
 
     var Control = {
@@ -68,13 +69,13 @@
             html = data.map(function (post) {
 
                 return tpl(searchTpl, {
-                    title: post.title,
-                    path: (G.BLOG.ROOT + '/' + post.path).replace(/\/{2,}/g, '/'),
-                    date: new Date(post.date).toLocaleDateString(),
-                    tags: post.tags.map(function (tag) {
-                        return '<span>#' + tag.name + '</span>';
-                    }).join('')
-                });
+                            title: post.title,
+                            path: (ROOT + '/' + post.path).replace(/\/{2,}/g, '/'),
+                            date: new Date(post.date).toLocaleDateString(),
+                            tags: post.tags.map(function (tag) {
+                                return '<span>#' + tag.name + '</span>';
+                            }).join('')
+                        });
 
             }).join('');
 
