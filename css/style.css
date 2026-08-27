@@ -2752,7 +2752,9 @@ hr,
   height: 100%;
 }
 #menu .brand-wrap {
-  background-size: 100% 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 #menu .brand {
   padding: 40px 20px 2em;
