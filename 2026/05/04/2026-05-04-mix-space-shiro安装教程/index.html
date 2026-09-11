@@ -631,18 +631,16 @@ function fallbackCopy(url, btn) {
 
 
     <!-- Waline Comments -->
-    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css" />
-    <div id="waline" class="comments"></div>
-    <script src="https://unpkg.com/@waline/client@v2/dist/waline.js"></script>
-    <script>
-        Waline.init({
-            el: '#waline',
-            serverURL: "https://waline.wn5.top/",
-            pageview: false,
-            login: "",
-            lang: "zh-CN",
-            dark: "auto",
-            emoji: ["https://unpkg.com/@waline/emojis@1.2.0/weibo","https://unpkg.com/@waline/emojis@1.2.0/alus"]
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.css" />
+    <div id="wl-comment" class="comments"></div>
+    <script type="module">
+        import { init } from 'https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.js';
+        init({
+            el: '#wl-comment',
+            serverURL: "https://waline.wn5.top",
+            lang: 'zh-CN',
+            path: location.pathname.replace(/index\.html$/, ''),
+            pageview: true
         });
     </script>
     <!-- Waline Comments end -->
