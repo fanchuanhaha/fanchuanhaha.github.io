@@ -237,12 +237,14 @@
                 }, false)
             }
 
-            var wxModal = new this.modal('#wxShare');
-            wxModal.onHide = shareModal.hide;
+            if ($('#wxShare')) {
+                var wxModal = new this.modal('#wxShare');
+                wxModal.onHide = shareModal.hide;
 
-            forEach.call($$('.wxFab'), function (el) {
-                el.addEventListener(even, wxModal.toggle)
-            })
+                forEach.call($$('.wxFab'), function (el) {
+                    el.addEventListener(even, wxModal.toggle)
+                })
+            }
 
         },
         search: function () {
