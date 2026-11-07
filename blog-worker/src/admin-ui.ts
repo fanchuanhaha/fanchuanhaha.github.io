@@ -138,7 +138,7 @@ a{color:var(--accent);text-decoration:none}
 .wk-comment .status.waiting{background:#fff3cd;color:#8a6d00}
 .wk-comment .status.approved{background:#d1f5d3;color:#147d19}
 .wk-comment .status.spam{background:#fde3e3;color:#d1241f}
-.wk-comment .status.admin{background:rgba(249,115,22,.16);color:#c2410c}
+.wk-comment .status.admin{background:#f97316;color:#fff;font-weight:600}
 .wk-comment .ops{margin-top:4px;display:flex;gap:6px}
 .wk-comment .ip{font-size:10px;color:var(--muted);margin-left:4px}
 /* 站长回复输入框（内联展开在评论下方） */
@@ -3268,7 +3268,7 @@ async function loadComments(){
     const el=document.createElement('div');
     el.className='wk-comment';
     const st=it.status==='approved'?'<span class="status approved">已通过</span>':(it.status==='spam'?'<span class="status spam">垃圾</span>':'<span class="status waiting">待审批</span>');
-    const adminBadge=(it.is_admin||it.type==='administrator')?'<span class="status admin">站长回复</span>':'';
+    const adminBadge=(it.is_admin||it.type==='administrator')?'<span class="status admin">站长</span>':'';
     const replyTo=(it.pid&&nickById.get(it.pid))?'<span class="path">回复 @'+esc(nickById.get(it.pid))+'</span>':'';
     const time=it.insertedAt?new Date(it.insertedAt).toLocaleString('zh-CN',{hour12:false}):'';
     let ops='<button class="wk-btn sm" data-a="reply">回复</button>';

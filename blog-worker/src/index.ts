@@ -771,7 +771,32 @@ app.post("/api/visit", async (c) => {
 });
 
 // ---------- 3.9 后台直接回复评论（站长回复）----------
-// 以管理员身份写入回复：默认已通过、前台显示站长标识、后台可看到「站长回复」标记。
+// 以管理员身份写入回复：默认已通过、前台显示站长标识、后台可看到「站长」标记。
+// 回复昵称取仓库根目录 _config.yml 的 author（成功结果缓存，失败回退「站长」）。
+let cachedBlogAuthor = "";
+async function getBlogAuthor(env: Bindings): Promise<string> {
+  if (cachedBlogAuthor) return cachedBlogAuthor;
+  const repo = (env.GH_REPO || "").trim();
+  const branch = (env.GH_BRANCH || "HEAD").trim();
+  if (repo) {
+    try {
+      const resp = await fetch(
+        `https://raw.githubusercontent.com/${repo}/${branch}/_config.yml`,
+        { headers: { "User-Agent": "blog-worker" } },
+      );
+      if (resp.ok) {
+        const text = await resp.text();
+        const m = /^author:\s*(.+?)\s*$/m.exec(text);
+        const name = m?.[1]?.replace(/^["']|["']$/g, "").trim();
+        if (name) cachedBlogAuthor = name;
+      }
+    } catch (e) {
+      console.error("getBlogAuthor failed", e);
+    }
+  }
+  return cachedBlogAuthor || "站长";
+}
+
 let commentAdminColumnReady = false;
 async function ensureCommentAdminColumn(db: D1Database): Promise<void> {
   if (commentAdminColumnReady) return;
@@ -801,7 +826,8 @@ app.post("/admin/api/comment/reply", async (c) => {
   if (!text) return json({ error: "回复内容不能为空" }, 400);
   if (text.length > 65536) return json({ error: "回复内容过长（最多 64KB）" }, 400);
 
-  const db = (c.env as Bindings).DB;
+  const env = c.env as Bindings;
+  const db = env.DB;
   try {
     await ensureCommentAdminColumn(db);
     const parent = await db
@@ -812,6 +838,7 @@ app.post("/admin/api/comment/reply", async (c) => {
 
     const rid = (parent.rid as number) || parentId;
     const ip = c.req.header("CF-Connecting-IP") || "";
+    const nick = await getBlogAuthor(env);
     // RETURNING 与 INSERT 同语句执行，避免 last_insert_rowid() 跨请求失效
     const row = await db
       .prepare(
@@ -824,7 +851,7 @@ app.post("/admin/api/comment/reply", async (c) => {
         renderMarkdown(text),
         text,
         ip,
-        "站长",
+        nick,
         parentId,
         rid,
         (parent.url as string) || "",
@@ -837,7 +864,7 @@ app.post("/admin/api/comment/reply", async (c) => {
         objectId: row?.id,
         comment: row?.comment,
         orig: row?.orig,
-        nick: "站长",
+        nick,
         pid: parentId,
         rid,
         url: row?.url,
