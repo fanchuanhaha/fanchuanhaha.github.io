@@ -19,6 +19,9 @@ type Bindings = Env & {
   GH_BRANCH?: string;
   POSTS_DIR?: string;
   PAGES_URL?: string;
+  // Cloudflare Workers AI：由部署工作流注入（与部署令牌同源），后台无需重复填写
+  CF_ACCOUNT_ID?: string;
+  CF_API_TOKEN?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -1105,13 +1108,18 @@ app.get("/admin/api/ai/settings", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
   try {
     const cfg = await getAiConfig((c.env as Bindings).DB);
+    const env = c.env as Bindings;
+    const cfFromEnv = !!(String(env.CF_ACCOUNT_ID || "").trim() && String(env.CF_API_TOKEN || "").trim());
     return json({
       ok: true,
       ...cfg,
       apiKey: "",
       hasKey: !!cfg.apiKey,
       cfApiKey: "",
-      hasCfKey: !!cfg.cfApiKey,
+      // 部署工作流已注入账户 / 令牌时，后台无需再填
+      hasCfKey: !!cfg.cfApiKey || cfFromEnv,
+      cfFromEnv,
+      cfEnvAccountId: cfFromEnv ? String(env.CF_ACCOUNT_ID || "").trim() : "",
       defaultPrompt: AI_DEFAULT_PROMPT,
     });
   } catch (e) {
@@ -1149,7 +1157,15 @@ app.put("/admin/api/ai/settings", async (c) => {
         : cur.cfModels,
     };
     await saveAiConfig(db, next);
-    return json({ ok: true, ...next, apiKey: "", hasKey: !!next.apiKey, cfApiKey: "", hasCfKey: !!next.cfApiKey });
+    return json({
+      ok: true,
+      ...next,
+      apiKey: "",
+      hasKey: !!next.apiKey,
+      cfApiKey: "",
+      hasCfKey: !!next.cfApiKey || !!(String((c.env as Bindings).CF_API_TOKEN || "").trim()),
+      cfFromEnv: !!(String((c.env as Bindings).CF_ACCOUNT_ID || "").trim() && String((c.env as Bindings).CF_API_TOKEN || "").trim()),
+    });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
   }
@@ -1274,8 +1290,15 @@ app.post("/admin/api/ai/models", async (c) => {
 // 令牌需具备 Workers AI 权限；额度（Neurons）通过 GraphQL Analytics 查询。
 const CF_FREE_NEURONS = 10000; // 免费额度：每天 10000 Neurons（UTC 00:00 重置）
 
-function cfBaseUrl(cfg: AiConfig): string {
-  return `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(cfg.cfAccountId)}/ai/v1`;
+function cfBaseUrl(accountId: string): string {
+  return `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}/ai/v1`;
+}
+
+// Cloudflare 凭据：优先用后台填写的，否则回退到部署工作流注入的账户 / 令牌
+function cfCreds(cfg: AiConfig, env: Bindings): { accountId: string; token: string; fromEnv: boolean } {
+  const accountId = String(cfg.cfAccountId || env.CF_ACCOUNT_ID || "").trim();
+  const token = String(cfg.cfApiKey || env.CF_API_TOKEN || "").trim();
+  return { accountId, token, fromEnv: !!((env.CF_ACCOUNT_ID || env.CF_API_TOKEN) && !(cfg.cfAccountId && cfg.cfApiKey)) };
 }
 
 // GET 模型列表：/ai/models/search?task=Text Generation
@@ -1284,8 +1307,9 @@ app.get("/admin/api/ai/cf/models", async (c) => {
   const db = (c.env as Bindings).DB;
   try {
     const cfg = await getAiConfig(db);
-    const accountId = String(c.req.query("accountId") || cfg.cfAccountId || "").trim();
-    const token = String(c.req.query("apiKey") || cfg.cfApiKey || "").trim();
+    const env = c.env as Bindings;
+    const accountId = String(c.req.query("accountId") || "").trim() || cfCreds(cfg, env).accountId;
+    const token = String(c.req.query("apiKey") || "").trim() || cfCreds(cfg, env).token;
     if (!accountId) return json({ ok: false, error: "请先填写 Cloudflare Account ID" }, 400);
     if (!token) return json({ ok: false, error: "请先填写 Cloudflare API 令牌" }, 400);
     const url =
@@ -1293,6 +1317,7 @@ app.get("/admin/api/ai/cf/models", async (c) => {
       `/ai/models/search?per_page=100&task=Text%20Generation`;
     const resp = await fetch(url, {
       headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(15000),
     });
     const text = await resp.text();
     let data: any = null;
@@ -1320,8 +1345,9 @@ app.get("/admin/api/ai/cf/quota", async (c) => {
   const db = (c.env as Bindings).DB;
   try {
     const cfg = await getAiConfig(db);
-    const accountId = String(c.req.query("accountId") || cfg.cfAccountId || "").trim();
-    const token = String(c.req.query("apiKey") || cfg.cfApiKey || "").trim();
+    const env = c.env as Bindings;
+    const accountId = String(c.req.query("accountId") || "").trim() || cfCreds(cfg, env).accountId;
+    const token = String(c.req.query("apiKey") || "").trim() || cfCreds(cfg, env).token;
     if (!accountId) return json({ ok: false, error: "请先填写 Cloudflare Account ID" }, 400);
     if (!token) return json({ ok: false, error: "请先填写 Cloudflare API 令牌" }, 400);
     // Neurons 按 UTC 自然日统计
@@ -1333,6 +1359,7 @@ app.get("/admin/api/ai/cf/quota", async (c) => {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ query, variables: { acc: accountId, d: day } }),
+      signal: AbortSignal.timeout(15000),
     });
     const data: any = await resp.json().catch(() => null);
     if (!resp.ok || (Array.isArray(data?.errors) && data.errors.length)) {
@@ -1493,17 +1520,18 @@ app.post("/admin/api/ai/chat", async (c) => {
   // Cloudflare Workers AI：模型以 @cf/ 开头或显式 provider=cf，走 Cloudflare 的 OpenAI 兼容接口
   const isCf = String(body.provider || "") === "cf" || model.indexOf("@cf/") === 0;
   if (isCf) {
-    if (!cfg.cfEnabled || !cfg.cfAccountId || !cfg.cfApiKey) {
+    const creds = cfCreds(cfg, c.env as Bindings);
+    if (!creds.accountId || !creds.token) {
       return json(
         {
           ok: false,
-          error: "请先在「设置 → AI 设置」启用 Cloudflare Workers AI，并填写 Account ID 与 API 令牌",
+          error: "Cloudflare AI 未配置：部署工作流未注入令牌，请在「设置 → AI 设置」填写 Account ID 与 API 令牌",
         },
         400
       );
     }
-    baseUrl = cfBaseUrl(cfg);
-    apiKey = cfg.cfApiKey;
+    baseUrl = cfBaseUrl(creds.accountId);
+    apiKey = creds.token;
   }
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const prompt =

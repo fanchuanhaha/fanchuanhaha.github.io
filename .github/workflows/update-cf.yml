@@ -76,6 +76,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
+      # 把部署用的 Cloudflare 账户与令牌注入 Worker，供「AI 设置 → Cloudflare Workers AI」直接使用，
+      # 无需在后台重复填写（令牌需具备 Workers AI 权限；额度查询需 Account Analytics:Read）
+      - name: Inject Cloudflare credentials (Workers AI)
+        working-directory: blog-worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | npx wrangler secret put CF_ACCOUNT_ID
+            printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | npx wrangler secret put CF_API_TOKEN
+            echo "已注入 CF_ACCOUNT_ID / CF_API_TOKEN"
+          else
+            echo "未配置 CF_ACCOUNT_ID，跳过"
+          fi
+
       # JWT_SECRET：优先用仓库 secret；否则首次自动随机生成并保存在 Worker 上，
       # 之后每次部署保持不变（避免部署后登录态失效）
       - name: Ensure JWT_SECRET (首次自动随机生成，之后保持不变)

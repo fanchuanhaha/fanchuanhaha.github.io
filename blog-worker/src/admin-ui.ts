@@ -996,14 +996,22 @@ async function loadAiSettings(){
       const pr = $('#aiPrompt'); if(pr) pr.value = d.prompt || d.defaultPrompt || '';
       const k = $('#aiApiKey');
       if(k){ k.value = ''; k.placeholder = d.hasKey ? '已保存（留空表示不修改）' : '未设置'; }
-      // Cloudflare Workers AI
+      // Cloudflare Workers AI（部署工作流已注入账户/令牌时无需手动填写）
       aiCfEnabledCfg = !!d.cfEnabled;
-      const ce = $('#aiCfEnabled'); if(ce) ce.checked = aiCfEnabledCfg;
-      const ca = $('#aiCfAccountId'); if(ca) ca.value = d.cfAccountId || '';
-      const ck = $('#aiCfApiKey'); if(ck){ ck.value = ''; ck.placeholder = d.hasCfKey ? '已保存（留空表示不修改）' : '未设置'; }
+      const ce = $('#aiCfEnabled'); if(ce) ce.checked = aiCfEnabledCfg || (!!d.cfFromEnv && !(d.cfModels||[]).length);
+      const ca = $('#aiCfAccountId');
+      if(ca){
+        ca.value = d.cfAccountId || '';
+        ca.placeholder = d.cfFromEnv ? ('已使用部署账户：' + String(d.cfEnvAccountId || '').slice(0, 8) + '…（留空即可）') : '账户 ID（32 位十六进制）';
+      }
+      const ck = $('#aiCfApiKey');
+      if(ck){
+        ck.value = '';
+        ck.placeholder = d.cfFromEnv ? '已使用部署令牌（留空即可）' : (d.hasCfKey ? '已保存（留空表示不修改）' : '未设置');
+      }
       aiCfPicked = Array.isArray(d.cfModels) ? d.cfModels.slice() : [];
       if(!aiCfModels.length) aiCfModels = aiCfPicked.slice();
-      aiCfToggle(aiCfEnabledCfg);
+      aiCfToggle(ce ? ce.checked : aiCfEnabledCfg);
     }
   }catch(e){}
 }
