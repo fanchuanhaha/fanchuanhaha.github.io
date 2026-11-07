@@ -35,23 +35,30 @@ jobs:
       - name: Install Hexo deps
         run: npm install
 
-      # 站点地址：优先用仓库 Variables 的 SITE_URL；否则按仓库推导 GitHub Pages 地址
+      # 站点地址优先级：
+      #   1) 仓库 Variables 的 SITE_URL
+      #   2) _config.yml 里已填写的自定义域名（不含 github.io，例如 https://blog.wn5.top）
+      #   3) 按仓库推导 GitHub Pages 地址（fork 后的默认行为）
+      # 自定义域名生效时 root 使用 /，与 GitHub Pages 自定义域名的访问路径一致。
       - name: Set site URL in _config.yml
         env:
           SITE_URL_VAR: ${{ vars.SITE_URL }}
         run: |
           OWNER="${{ github.repository_owner }}"
           NAME="${{ github.repository }}"; NAME="${NAME##*/}"
+          CUR="$(grep -E '^url:' _config.yml | head -1 | sed -E "s/^url:[[:space:]]*//; s/[\"']//g; s|[[:space:]]*$||")"
           if [ -n "$SITE_URL_VAR" ]; then
-            URL="${SITE_URL_VAR%/}"; ROOT="/"
+            URL="${SITE_URL_VAR%/}"; ROOT="/"; SRC="仓库变量 SITE_URL"
+          elif [ -n "$CUR" ] && ! echo "$CUR" | grep -q 'github\.io'; then
+            URL="${CUR%/}"; ROOT="/"; SRC="_config.yml 自定义域名"
           elif [ "$(echo "$NAME" | tr 'A-Z' 'a-z')" = "$(echo "$OWNER" | tr 'A-Z' 'a-z').github.io" ]; then
-            URL="https://$OWNER.github.io"; ROOT="/"
+            URL="https://$OWNER.github.io"; ROOT="/"; SRC="按仓库推导"
           else
-            URL="https://$OWNER.github.io/$NAME"; ROOT="/$NAME/"
+            URL="https://$OWNER.github.io/$NAME"; ROOT="/$NAME/"; SRC="按仓库推导"
           fi
           sed -i "/^root: /d" _config.yml
           sed -i "s|^url: .*|url: $URL\nroot: $ROOT|" _config.yml
-          echo "site url -> $URL  root -> $ROOT"
+          echo "site url -> $URL  root -> $ROOT  ($SRC)"
 
       - name: Generate site
         run: npx hexo generate
@@ -77,7 +84,7 @@ jobs:
           NOTIFY_SECRET: ${{ secrets.GH_TOKEN }}
           POST_TITLE: ${{ inputs.post_title }}
           POST_URL: ${{ inputs.post_url }}
-          # 通知回调地址：默认站点域名；换成自己的可在仓库 Variables 里设 SITE_URL
+          # 通知回调地址：优先仓库变量 SITE_URL，否则回退到站点域名
           NOTIFY_URL: ${{ vars.SITE_URL || 'https://blog.wn5.top' }}
         run: |
           curl -sS -m 60 -X POST "${NOTIFY_URL}/api/internal/notify-published" \
