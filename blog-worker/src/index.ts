@@ -812,11 +812,13 @@ app.post("/admin/api/comment/reply", async (c) => {
 
     const rid = (parent.rid as number) || parentId;
     const ip = c.req.header("CF-Connecting-IP") || "";
-    const result = await db
+    // RETURNING 与 INSERT 同语句执行，避免 last_insert_rowid() 跨请求失效
+    const row = await db
       .prepare(
         `INSERT INTO "wl_Comment"
           (user_id, comment, orig, ip, link, mail, nick, pid, rid, sticky, status, "like", ua, url, is_admin)
-         VALUES (NULL, ?, ?, ?, '', '', ?, ?, ?, 0, 'approved', 0, '', ?, 1)`,
+         VALUES (NULL, ?, ?, ?, '', '', ?, ?, ?, 0, 'approved', 0, '', ?, 1)
+         RETURNING *`,
       )
       .bind(
         renderMarkdown(text),
@@ -827,12 +829,8 @@ app.post("/admin/api/comment/reply", async (c) => {
         rid,
         (parent.url as string) || "",
       )
-      .run();
-    if (!result.success) return json({ error: "回复失败" }, 500);
-
-    const row = await db
-      .prepare(`SELECT * FROM "wl_Comment" WHERE id = last_insert_rowid()`)
       .first<Record<string, any>>();
+    if (!row) return json({ error: "回复失败" }, 500);
     return json({
       ok: true,
       data: {
