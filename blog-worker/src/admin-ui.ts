@@ -226,7 +226,8 @@ a{color:var(--accent);text-decoration:none}
 .ai-conv-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ai-main{flex:1;display:flex;flex-direction:column;min-width:0}
 .ai-bar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;min-width:0}
-.ai-scroll{flex:1;overflow:auto;min-height:0;overflow-anchor:none}
+/* 始终预留滚动条位置：输出内容时滚动条出现/消失不再让中间内容左右跳 */
+.ai-scroll{flex:1;overflow-y:scroll;overflow-x:auto;min-height:0;overflow-anchor:none;scrollbar-gutter:stable}
 .ai-col{max-width:748px;width:100%;margin:0 auto;padding:18px 16px 4px;display:flex;flex-direction:column;gap:16px}
 .ai-msg{display:flex;flex-direction:column;gap:4px;min-width:0}
 .ai-msg.user{align-items:flex-end}
@@ -283,8 +284,7 @@ a{color:var(--accent);text-decoration:none}
 .ai-tool-fold-sec{margin:0 0 6px}
 .ai-tool-fold-pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;max-height:240px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px}
 .ai-tool-fold-pre.err{color:#d9534f}
-/* 等待模型响应：气泡内的普通一行文字（无动画），首个输出片段到达时被内容整体替换 */
-.ai-wait{font-size:12.5px;color:var(--muted);padding:2px 0}
+/* 等待模型响应的提示已移到输入框上方的底部状态行（#aiChatMsg），不再占用消息区 */
 /* 输入区上方一行的「i」按钮：查看已用 token / 缓存命中 */
 #aiUsageBtn{margin-left:auto;flex:0 0 auto;width:26px;height:26px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;line-height:1}
 .ai-usage-pop{position:fixed;z-index:1200;background:var(--card);border:1px solid var(--border);border-radius:4px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:10px 12px;min-width:190px;font-size:12px}
@@ -1549,7 +1549,7 @@ function aiSyncUrl(){
 function aiNewChat(){
   if(aiStreaming){ toast('正在回复中，请稍候', true); return; }
   aiConvId = null; aiConvMessages = []; aiConvTitle = ''; aiUsagePending = null; aiPerfPending = null;
-  aiStick = true; // 新对话：从底部开始
+  aiStick = true; aiUserHold = false; // 新对话：从底部开始
   aiSetTitle('');
   aiUpdateUsagePop();
   renderAiMessages();
@@ -1584,7 +1584,7 @@ async function aiOpenConv(id){
   aiConvId = c.id;
   aiConvMessages = Array.isArray(c.messages) ? c.messages : [];
   aiConvTitle = c.title || ''; aiUsagePending = null; aiPerfPending = null;
-  aiStick = true; // 打开会话：默认从底部看
+  aiStick = true; aiUserHold = false; // 打开会话：默认从底部看
   aiSetTitle(aiConvTitle);
   aiUpdateUsagePop();
   renderAiMessages();
@@ -2028,6 +2028,7 @@ function aiBubbleHtml(role, content, idx, m){
 //    「恢复跟随」，绝不允许停止跟随——避免一次误判就永久卡死。
 const AI_NEAR = 24;                 // 距底部多少 px 内算「在底部」（太大会在用户小幅上滑时把人拽回去，看起来在抽动）
 let aiStick = true;                 // 是否跟随最新内容
+let aiUserHold = false;             // 用户主动上滑看历史：回到底部之前，新输出一律不把他拽回去
 let aiPinning = false;              // 本次 scroll 事件是否由程序化贴底产生（要忽略，防止误判用户上滑）
 let aiUserScrollT = 0;              // 最近一次用户主动滚动的时刻：刚滚动完的 350ms 内不自动恢复跟随，避免边滑边被拽回
 let aiPointerDown = false;          // 指针/手指是否仍按住（拖滚动条时拖离底部才停跟随；松开后的惯性滚动不算）
@@ -2056,6 +2057,12 @@ function aiPinBottom(box){
 // 恢复跟随需距用户上次主动滚动 ≥350ms：刚滑完就恢复会把人拽回去（小幅上滑时表现为抽动）
 function aiFollowOrPin(){
   const box = aiScroller(); if(!box) return;
+  // 用户上滑后处于「看历史」状态：只有他自己滚回真正的底部才恢复跟随。
+  // 中间无论新输出多少内容都不动滚动位置（这正是「刚翻上去又被拽回底部」的原因）。
+  if(aiUserHold){
+    if(aiBottomGap(box) <= 2) aiUserHold = false;
+    else return;
+  }
   if(aiNearBottom(box) && Date.now() - aiUserScrollT > 350) aiStick = true;
   if(aiStick) aiPinBottom(box);
 }
@@ -2087,8 +2094,14 @@ function aiEnsureColObserver(){
     // 回到底部附近 → 恢复跟随；用户拖滚动条远离底部 → 停止跟随；其余不改变状态
     box.addEventListener('scroll', function(){
       if(aiPinning){ aiPinning = false; return; }
-      if(aiNearBottom(box)){ if(Date.now() - aiUserScrollT > 350) aiStick = true; }
-      else if(aiPointerDown){ aiStick = false; aiUserScrollT = Date.now(); } // 仅按住拖动时拖离底部才停跟随；松手后的惯性滚动不误判
+      // 只有用户自己滚到真正的底部才结束「看历史」；近底部阈值（24px）在这里不算，
+      // 否则小幅上滑后一有 scroll 事件就恢复跟随，又会被拽回底部
+      if(aiBottomGap(box) <= 2){
+        aiUserHold = false;
+        if(Date.now() - aiUserScrollT > 350) aiStick = true;
+      } else if(aiPointerDown){
+        aiStick = false; aiUserHold = true; aiUserScrollT = Date.now();
+      }
     }, { passive:true });
     // 滚轮上滑 = 想看历史：仅当真的处于已下滚状态（上方还有内容可看）才停止跟随，
     // 防止内容不足一屏或已在顶部时的空滚误关跟随。
@@ -2099,7 +2112,7 @@ function aiEnsureColObserver(){
       const t = e.target;
       const inner = (t && t.closest) ? t.closest('.ai-proc-body, .ai-tool-fold-pre, .ai-body pre, .ai-body table') : null;
       if(inner && inner.scrollTop > 0) return;
-      aiStick = false; aiUserScrollT = Date.now();
+      aiStick = false; aiUserHold = true; aiUserScrollT = Date.now();
     }, { passive:true });
     // 手指向下划（浏览更早内容）：停止跟随。
     // 必须是「明确的上滑手势」：位移超过 6px 且当前确实已下滚过，否则点按/收键盘的轻微
@@ -2109,14 +2122,14 @@ function aiEnsureColObserver(){
     }, { passive:true });
     box.addEventListener('touchmove', function(e){
       const y = (e.touches && e.touches[0]) ? e.touches[0].clientY : null;
-      if(y != null && aiTouchY != null && y - aiTouchY > 6 && box.scrollTop > 4){ aiStick = false; aiUserScrollT = Date.now(); }
+      if(y != null && aiTouchY != null && y - aiTouchY > 6 && box.scrollTop > 4){ aiStick = false; aiUserHold = true; aiUserScrollT = Date.now(); }
       aiTouchY = y;
     }, { passive:true });
     // 触屏惯性滚动期间也要记录「用户在滚动」，防止恢复跟随把惯性中的手指拽回去
     box.addEventListener('touchend', function(){ aiUserScrollT = Date.now(); }, { passive:true });
     // 键盘上翻：停止跟随
     box.addEventListener('keydown', function(e){
-      if(e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Home'){ aiStick = false; aiUserScrollT = Date.now(); }
+      if(e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Home'){ aiStick = false; aiUserHold = true; aiUserScrollT = Date.now(); }
     });
     // 按住 = 拖动滚动条中；松开立即结束（惯性滚动期间不再当作拖动）
     box.addEventListener('pointerdown', function(){ aiPointerDown = true; }, { passive:true });
@@ -2164,7 +2177,7 @@ async function aiSend(){
   if(!text){ toast('请输入内容', true); return; }
   aiConvMessages.push({ role:'user', content:text });
   if(input){ input.value = ''; aiAutoGrow(); }
-  aiStick = true; // 刚发送：回到「跟随最新回复」状态
+  aiStick = true; aiUserHold = false; // 刚发送：回到「跟随最新回复」状态
   aiSetTitle(aiConvTitle);
   renderAiMessages();
   aiSaveProgress();   // 先落盘用户提问，刷新后不会整轮消失
@@ -2195,10 +2208,15 @@ async function aiAgentLoop(){
       const lastRound = rounds >= AI_MAX_ROUNDS;
       renderAiMessages();
       const box = $('#aiCol');
-      // 生成中的临时气泡：不显示「AI」标签；等待提示放在气泡内部，首个输出片段
-      // 会整体替换 innerHTML，因此出现/消失不会引起额外的高度跳变
-      if(box) box.insertAdjacentHTML('beforeend', '<div class="ai-msg assistant">'+
-        '<div class="ai-body md" id="aiCurBody"><div class="ai-wait">等待模型响应…</div></div></div>');
+      // 等待提示放在输入框上方的底部状态行（#aiChatMsg），不再占用消息区；
+      // 临时气泡先隐藏，首个输出片段到达时才显示，避免出现空白大块
+      if(msg){ msg.className = 'msg'; msg.textContent = '等待模型响应…'; }
+      let msgEl = null;
+      if(box){
+        box.insertAdjacentHTML('beforeend', '<div class="ai-msg assistant" style="display:none">'+
+          '<div class="ai-body md" id="aiCurBody"></div></div>');
+        msgEl = box.lastElementChild;
+      }
       scrollAiBottom();
       const bodyEl = box ? box.querySelector('#aiCurBody') : null;
       // 本轮草稿将落在 aiConvMessages 的末尾，proc key 必须与渲染器的回合 key 一致
@@ -2207,7 +2225,7 @@ async function aiAgentLoop(){
       for(let k = aiConvMessages.length - 1; k >= 0; k--){
         if((aiConvMessages[k] || {}).role === 'user'){ turnStart = k + 1; break; }
       }
-      const ui = { bodyEl: bodyEl, acc: '', procKey: 'proc-' + turnStart };
+      const ui = { bodyEl: bodyEl, msgEl: msgEl, acc: '', procKey: 'proc-' + turnStart };
       let res;
       try{
         res = await aiStreamRound(modelName, ui, lastRound);
@@ -2336,6 +2354,8 @@ function aiStreamHtml(acc){
 }
 function aiStreamPaint(ui, acc){
   if(!ui || !ui.bodyEl) return;
+  // 第一个片段到达：把预留的临时气泡显示出来（等待期间它是不占位的）
+  if(ui.msgEl && ui.msgEl.style.display === 'none') ui.msgEl.style.display = '';
   ui.bodyEl.innerHTML = aiStreamHtml(acc);
   try{
     const h = ui.bodyEl.offsetHeight;
@@ -2401,6 +2421,9 @@ async function aiStreamRound(modelName, ui, noTools){
     ttft = Date.now() - t0;
     aiPerfPending = { ttft: ttft };
     aiUpdateUsagePop();
+    // 模型已经开始响应：清掉底部状态行的「等待模型响应…」
+    const m = $('#aiChatMsg');
+    if(m && m.textContent === '等待模型响应…') m.textContent = '';
   };
   while(true){
     const chunk = await reader.read();
