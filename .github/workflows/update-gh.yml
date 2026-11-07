@@ -77,8 +77,8 @@ jobs:
           NOTIFY_SECRET: ${{ secrets.GH_TOKEN }}
           POST_TITLE: ${{ inputs.post_title }}
           POST_URL: ${{ inputs.post_url }}
-          # 通知回调地址：默认上游域名；换成自己的可在仓库 Variables 里设 SITE_URL
-          NOTIFY_URL: ${{ vars.SITE_URL || 'https://blog.902786.xyz' }}
+          # 通知回调地址：默认站点域名；换成自己的可在仓库 Variables 里设 SITE_URL
+          NOTIFY_URL: ${{ vars.SITE_URL || 'https://blog.wn5.top' }}
         run: |
           curl -sS -m 60 -X POST "${NOTIFY_URL}/api/internal/notify-published" \
             -H "Content-Type: application/json" \
