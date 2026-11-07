@@ -29,7 +29,7 @@ menu:
     target: _blank
   globe:
     text: 网站首页
-    url: 'https://802213.xyz'
+    url: 'https://blog.wn5.top'
     target: _blank
 
 # 你的头像url (使用 QQ 头像 API)
@@ -145,7 +145,7 @@ valine:
 # Waline Comment system. https://waline.js.org
 waline:
   enable: true # 是否启用 Waline，true 启用
-  serverURL: https://blog.902786.xyz/waline # Waline 服务端根地址
+  serverURL: https://blog.wn5.top/waline # Waline 服务端根地址
   pageview: true # 是否统计文章阅读量（需服务端开启）
   login: '' # 登录方式: ''(可直接评论), enable(评论后需登录), force(强制登录)
   lang: zh-CN # 评论框语言
