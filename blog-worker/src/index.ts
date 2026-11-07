@@ -22,6 +22,8 @@ type Bindings = Env & {
   // Cloudflare Workers AI：由部署工作流注入（与部署令牌同源），后台无需重复填写
   CF_ACCOUNT_ID?: string;
   CF_API_TOKEN?: string;
+  // 专门用于 Workers AI / 额度查询的令牌（部署工作流注入，优先于 CF_API_TOKEN）
+  CF_AI_TOKEN?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -1297,8 +1299,10 @@ function cfBaseUrl(accountId: string): string {
 // Cloudflare 凭据：优先用后台填写的，否则回退到部署工作流注入的账户 / 令牌
 function cfCreds(cfg: AiConfig, env: Bindings): { accountId: string; token: string; fromEnv: boolean } {
   const accountId = String(cfg.cfAccountId || env.CF_ACCOUNT_ID || "").trim();
-  const token = String(cfg.cfApiKey || env.CF_API_TOKEN || "").trim();
-  return { accountId, token, fromEnv: !!((env.CF_ACCOUNT_ID || env.CF_API_TOKEN) && !(cfg.cfAccountId && cfg.cfApiKey)) };
+  // 优先用专门给 AI 用的令牌（部署工作流注入），其次回退到部署令牌
+  const token = String(cfg.cfApiKey || env.CF_AI_TOKEN || env.CF_API_TOKEN || "").trim();
+  const hasEnv = !!(env.CF_ACCOUNT_ID || env.CF_AI_TOKEN || env.CF_API_TOKEN);
+  return { accountId, token, fromEnv: !!(hasEnv && !(cfg.cfAccountId && cfg.cfApiKey)) };
 }
 
 // GET 模型列表：/ai/models/search?task=Text Generation
