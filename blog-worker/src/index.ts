@@ -469,6 +469,24 @@ function ensureVisitTables(db: D1Database): Promise<unknown> {
         db.prepare(
           `CREATE TABLE IF NOT EXISTS "wl_VisitVisitor" ("day" TEXT NOT NULL, "visitor" TEXT NOT NULL, PRIMARY KEY("day","visitor"))`
         ),
+        // 按来源站点统计（新增，历史 wl_Visit 汇总数据保持不动）
+        db.prepare(
+          `CREATE TABLE IF NOT EXISTS "wl_VisitSite" (
+            "day" TEXT NOT NULL,
+            "site" TEXT NOT NULL,
+            "count" INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY("day","site")
+          )`
+        ),
+        // 按站点去重：同一访客同一天在同一站点只计一次
+        db.prepare(
+          `CREATE TABLE IF NOT EXISTS "wl_VisitVisitorSite" (
+            "day" TEXT NOT NULL,
+            "site" TEXT NOT NULL,
+            "visitor" TEXT NOT NULL,
+            PRIMARY KEY("day","site","visitor")
+          )`
+        ),
         // 保留天数等设置存放于此（与 Waline 共用 wl_Settings，缺失时自愈创建）
         db.prepare(
           `CREATE TABLE IF NOT EXISTS "wl_Settings" ("key" TEXT PRIMARY KEY, "value" TEXT NOT NULL DEFAULT '', "updatedAt" TEXT DEFAULT (datetime('now')))`
@@ -541,6 +559,8 @@ async function visitCleanup(db: D1Database) {
     await db.batch([
       db.prepare(`DELETE FROM "wl_Visit" WHERE "day"<?1`).bind(cutoff),
       db.prepare(`DELETE FROM "wl_VisitVisitor" WHERE "day"<?1`).bind(cutoff),
+      db.prepare(`DELETE FROM "wl_VisitSite" WHERE "day"<?1`).bind(cutoff),
+      db.prepare(`DELETE FROM "wl_VisitVisitorSite" WHERE "day"<?1`).bind(cutoff),
     ]);
   } catch (e) {
     console.error("visit cleanup failed", e);
@@ -558,6 +578,76 @@ async function visitorId(c: { req: { header: (k: string) => string | undefined }
     .slice(0, 32);
 }
 
+// 来源站点归一化：只保留域名（去掉协议、路径、端口、www.），非法值返回空
+function normalizeSite(raw: string): string {
+  let s = String(raw || "").trim().toLowerCase();
+  if (!s) return "";
+  s = s.replace(/^[a-z][a-z0-9+.-]*:\/\//, "");
+  s = s.split("/")[0].split("?")[0].split("#")[0];
+  s = s.replace(/:\d+$/, "").replace(/^www\./, "");
+  if (!/^[a-z0-9][a-z0-9.-]*$/.test(s)) return "";
+  return s.slice(0, 100);
+}
+
+// 判断本次访问来自哪个站点：请求方显式传 site > Origin > Referer > Host
+// （博客页面与自己域名的 /api 同源，Host 即站点域名；跨域嵌入时用 Origin/Referer）
+function requestSite(c: {
+  req: {
+    header: (k: string) => string | undefined;
+  };
+}): string {
+  const origin = normalizeSite(c.req.header("origin") || "");
+  if (origin) return origin;
+  const referer = normalizeSite(c.req.header("referer") || "");
+  if (referer) return referer;
+  const host = normalizeSite(c.req.header("x-forwarded-host") || c.req.header("host") || "");
+  return host || "unknown";
+}
+
+// 按来源站点统计：区间内 / 今日 / 累计 + 历史（未区分站点）数量
+async function visitSiteStats(db: D1Database, days: number) {
+  await ensureVisitTables(db);
+  const day = visitDay();
+  const from = visitDay(days - 1);
+  const [rangeRows, totalRows, dayRow] = await Promise.all([
+    db
+      .prepare(
+        `SELECT "site",
+                SUM("count") AS "range",
+                SUM(CASE WHEN "day"=?1 THEN "count" ELSE 0 END) AS "today"
+         FROM "wl_VisitSite" WHERE "day">=?2 GROUP BY "site" ORDER BY "range" DESC`
+      )
+      .bind(day, from)
+      .all<{ site: string; range: number; today: number }>(),
+    db
+      .prepare(`SELECT "site", SUM("count") AS "total" FROM "wl_VisitSite" GROUP BY "site"`)
+      .all<{ site: string; total: number }>(),
+    db
+      .prepare(
+        `SELECT COALESCE(SUM("count"),0) AS "range" FROM "wl_Visit" WHERE "day">=?1`
+      )
+      .bind(from)
+      .first<{ range: number }>(),
+  ]);
+  const totals = new Map<string, number>();
+  (totalRows.results || []).forEach((r) => totals.set(r.site, Number(r.total) || 0));
+  const sites = (rangeRows.results || []).map((r) => ({
+    site: r.site,
+    today: Number(r.today) || 0,
+    range: Number(r.range) || 0,
+    total: totals.get(r.site) ?? (Number(r.range) || 0),
+  }));
+  const known = sites.reduce((a, b) => a + b.range, 0);
+  const rangeTotal = Number(dayRow?.range) || 0;
+  return {
+    days,
+    sites,
+    rangeTotal,
+    // 历史（升级前未区分站点的记录）保留并在后台单独展示
+    legacy: Math.max(0, rangeTotal - known),
+  };
+}
+
 // 预检
 app.options("/api/visit", (c) => new Response(null, { status: 204, headers: VISIT_CORS }));
 
@@ -572,26 +662,42 @@ app.get("/api/visit/stats", async (c) => {
   }
 });
 
-// 记录一次访问：POST /api/visit（同一访客同一天只计一次，刷新不重复计数）
+// 记录一次访问：POST /api/visit（同一访客同一天在同一站点只计一次，刷新不重复计数）
+// 可选 body: {"site":"https://1.com"}；不传则按 Origin / Referer / Host 自动识别来源站点
 app.post("/api/visit", async (c) => {
   const db = (c.env as Bindings).DB;
   const day = visitDay();
   try {
+    const body = (await c.req.json().catch(() => ({}))) as { site?: unknown };
+    const site = normalizeSite(String(body?.site ?? "")) || requestSite(c);
     await ensureVisitTables(db);
     const vid = await visitorId(c);
     const ins = await db
-      .prepare(`INSERT OR IGNORE INTO "wl_VisitVisitor" ("day","visitor") VALUES (?1,?2)`)
-      .bind(day, vid)
+      .prepare(
+        `INSERT OR IGNORE INTO "wl_VisitVisitorSite" ("day","site","visitor") VALUES (?1,?2,?3)`
+      )
+      .bind(day, site, vid)
       .run();
     const counted = ((ins.meta as { changes?: number } | undefined)?.changes ?? 0) > 0;
     if (counted) {
-      await db
-        .prepare(
-          `INSERT INTO "wl_Visit" ("day","count") VALUES (?1,1)
-           ON CONFLICT("day") DO UPDATE SET "count"="count"+1`
-        )
-        .bind(day)
-        .run();
+      await db.batch([
+        db
+          .prepare(
+            `INSERT INTO "wl_Visit" ("day","count") VALUES (?1,1)
+             ON CONFLICT("day") DO UPDATE SET "count"="count"+1`
+          )
+          .bind(day),
+        db
+          .prepare(
+            `INSERT INTO "wl_VisitSite" ("day","site","count") VALUES (?1,?2,1)
+             ON CONFLICT("day","site") DO UPDATE SET "count"="count"+1`
+          )
+          .bind(day, site),
+        // 旧表继续写入，保证历史口径数据完整（仅记录，不再参与去重判断）
+        db
+          .prepare(`INSERT OR IGNORE INTO "wl_VisitVisitor" ("day","visitor") VALUES (?1,?2)`)
+          .bind(day, vid),
+      ]);
     }
     try {
       c.executionCtx.waitUntil(visitCleanup(db));
@@ -599,7 +705,7 @@ app.post("/api/visit", async (c) => {
       /* 无 executionCtx 时忽略 */
     }
     const s = await visitStats(db);
-    return visitJson({ ok: true, counted, ...s });
+    return visitJson({ ok: true, counted, site, ...s });
   } catch (e) {
     console.error("visit record failed", e);
     return visitJson({ ok: false, today: 0, total: 0 });
@@ -728,6 +834,18 @@ app.get("/admin/api/visit/daily", async (c) => {
   try {
     const series = await visitDaily((c.env as Bindings).DB, days);
     return json({ ok: true, days, series, sum: series.reduce((a, b) => a + b.count, 0) });
+  } catch (e) {
+    return json({ ok: false, error: String(e) }, 500);
+  }
+});
+
+// 按站点明细：/admin/api/visit/sites?days=30
+app.get("/admin/api/visit/sites", async (c) => {
+  if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
+  const raw = parseInt(c.req.query("days") || "30", 10);
+  const days = Number.isFinite(raw) ? Math.min(Math.max(raw, 1), 3650) : 30;
+  try {
+    return json({ ok: true, ...(await visitSiteStats((c.env as Bindings).DB, days)) });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
   }

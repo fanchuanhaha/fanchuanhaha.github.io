@@ -16,8 +16,14 @@
         if (t && d.today != null) { t.textContent = d.today; }
         if (s && d.total != null) { s.textContent = d.total; }
     }
-    // 上报一次访问：同一访客同一天只计一次，刷新不会重复增加；接口会回传最新数值
-    fetch(API + '/api/visit', { method: 'POST', keepalive: true })
+    // 上报一次访问：同一访客同一天在同一站点只计一次，刷新不会重复增加；接口会回传最新数值
+    // 带上当前站点 origin，后台据此区分是哪个站点被访问
+    fetch(API + '/api/visit', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ site: window.location.origin })
+    })
         .then(function (r) { return r.json(); })
         .then(function (d) { if (d && d.ok) { render(d); } })
         .catch(function () {

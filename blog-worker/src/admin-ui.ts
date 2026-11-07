@@ -743,6 +743,56 @@ async function loadVisit(){
   }
   const ld = $('#visitDaysLabel');
   if(ld) ld.textContent = visitDays;
+  const sld = $('#visitSiteDaysLabel');
+  if(sld) sld.textContent = visitDays;
+  loadVisitSites();
+}
+
+// 来源站点明细：站点 / 今日 / 区间 / 累计 / 占比
+async function loadVisitSites(){
+  const box = $('#visitSiteList');
+  if(!box) return;
+  box.innerHTML = '<div class="empty">加载中...</div>';
+  try{
+    const r = await api('/admin/api/visit/sites?days=' + visitDays);
+    if(!r.ok || !r.data){ box.innerHTML = '<div class="empty">加载失败</div>'; return; }
+    const d = r.data, sites = d.sites || [];
+    if(!sites.length && !d.legacy){
+      box.innerHTML = '<div class="empty">暂无数据</div>';
+      return;
+    }
+    const known = sites.reduce((a,b) => a + (Number(b.range)||0), 0);
+    const denom = Math.max(1, Number(d.rangeTotal) || known);
+    const pct = v => ((Number(v)||0) / denom * 100);
+    let h = '<div style="overflow-x:auto"><table class="wk-table"><thead><tr>' +
+      '<th>来源站点</th><th style="text-align:right">今日</th><th style="text-align:right">近 '+esc(String(visitDays))+' 天</th>' +
+      '<th style="text-align:right">累计</th><th style="text-align:right">区间占比</th><th style="min-width:110px">占比</th>' +
+      '</tr></thead><tbody>';
+    sites.forEach(s => {
+      const p = pct(s.range);
+      h += '<tr><td><b>' + esc(s.site) + '</b></td>' +
+        '<td style="text-align:right">' + (Number(s.today)||0) + '</td>' +
+        '<td style="text-align:right">' + (Number(s.range)||0) + '</td>' +
+        '<td style="text-align:right">' + (Number(s.total)||0) + '</td>' +
+        '<td style="text-align:right">' + p.toFixed(1) + '%</td>' +
+        '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--accent);width:' + Math.min(100,p).toFixed(1) + '%"></div></div></td>' +
+        '</tr>';
+    });
+    if(d.legacy > 0){
+      h += '<tr><td><span style="color:var(--muted)">未区分站点（历史记录）</span></td>' +
+        '<td style="text-align:right">-</td>' +
+        '<td style="text-align:right">' + Number(d.legacy) + '</td>' +
+        '<td style="text-align:right">-</td>' +
+        '<td style="text-align:right">' + pct(d.legacy).toFixed(1) + '%</td>' +
+        '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--muted);width:' + Math.min(100,pct(d.legacy)).toFixed(1) + '%"></div></div></td>' +
+        '</tr>';
+    }
+    h += '</tbody></table></div>';
+    h += '<p class="wk-label" style="margin:8px 0 0">区间总访问：<b>' + (Number(d.rangeTotal)||0) + '</b>　站点合计：<b>' + known + '</b></p>';
+    box.innerHTML = h;
+  }catch(e){
+    box.innerHTML = '<div class="empty">加载失败</div>';
+  }
 }
 
 // 快捷按钮：7/30/90/365
@@ -4410,6 +4460,12 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
       <div id="visitChart"><div class="empty">加载中...</div></div>
       <p class="wk-label" style="margin:8px 0 0">图中区间合计：<b id="visitRangeSum">-</b></p>
     </div>
+
+    <div class="wk-card">
+      <h3 class="wk-title">来源站点明细（最近 <span id="visitSiteDaysLabel">30</span> 天）</h3>
+      <p class="wk-label" style="margin:0 0 10px">按访问来源域名统计，同一访客同一天在同一站点只计一次；升级前的历史记录未区分站点，单列显示。</p>
+      <div id="visitSiteList"><div class="empty">加载中...</div></div>
+    </div>
   </div>
 
   <!-- 订阅管理（订阅者 + 订阅限制 + 群发 + 邮件模板；SMTP 服务器在「设置」页） -->
@@ -4806,13 +4862,19 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
           <li>
             <div>
               <div class="name"><span class="chip">POST</span> /api/visit</div>
-              <div class="meta">记录一次访问（前台调用）。同一访客同一天只计一次，刷新不重复。返回 {ok, counted, today, total}</div>
+              <div class="meta">记录一次访问（前台调用）。同一访客同一天在同一站点只计一次，刷新不重复。可选请求体 {"site":"https://1.com"}（不传则按 Origin/Referer/Host 识别）。返回 {ok, counted, site, today, total}</div>
             </div>
           </li>
           <li>
             <div>
               <div class="name"><span class="chip">GET</span> /api/visit/stats</div>
               <div class="meta">查询访问量。返回 {ok, today, total}，today 按东八区计算</div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <div class="name"><span class="chip">GET</span> /admin/api/visit/sites?days=30</div>
+              <div class="meta">按来源站点明细（需管理员登录）。返回 {ok, days, rangeTotal, legacy, sites:[{site,today,range,total}]}；legacy 为升级前未区分站点的历史数量</div>
             </div>
           </li>
           <li>
