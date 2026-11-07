@@ -27,6 +27,10 @@ menu:
     text: QQ群
     url: 'https://qm.qq.com/q/DTMDzZNZPa'
     target: _blank
+  globe:
+    text: 网站首页
+    url: 'https://802213.xyz'
+    target: _blank
 
 # 你的头像url (使用 QQ 头像 API)
 avatar: 'https://q1.qlogo.cn/g?b=qq&nk=3098393078&s=640'
@@ -82,7 +86,7 @@ toc:
   list_number: true  # 是否显示数字排序
 
 # 文章页留言内容，hexo中所有变量及辅助函数等均可调用，具体请查阅 hexo.io
-postMessage: 这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="<%- url_for(page.path).replace(/index\.html$/, '') %>" target="_blank" rel="external"><%- page.permalink.replace(/index\.html$/, '') %></a>
+postMessage: 这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="<%- url_for(page.path).replace(/index\\.html$/, '') %>" target="_blank" rel="external"><%- page.permalink.replace(/index\\.html$/, '') %></a>
 
 # 站长统计，如要开启，输入CNZZ站点id，如 cnzz: 1255152447
 cnzz: false
