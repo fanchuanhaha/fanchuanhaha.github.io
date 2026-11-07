@@ -50,6 +50,8 @@ jobs:
   # ---- 1. 构建 Hexo 并部署到 GitHub Pages（gh-pages 分支）----
   build-blog:
     runs-on: ubuntu-latest
+    outputs:
+      site_domain: ${{ steps.siteurl.outputs.domain }}
     steps:
       - uses: actions/checkout@v4
 
@@ -61,24 +63,32 @@ jobs:
       - name: Install Hexo deps
         run: npm install
 
-      # 站点地址：优先用仓库 Variables 的 SITE_URL；否则按仓库推导 GitHub Pages 地址。
-      # 这样 fork 后生成的页面/资源链接指向自己的地址，而不是上游域名。
+      # 站点地址优先级：
+      #   1) 仓库 Variables 的 SITE_URL
+      #   2) _config.yml 里已填写的自定义域名（不含 github.io，例如 https://blog.wn5.top）
+      #   3) 按仓库推导 GitHub Pages 地址（fork 后的默认行为）
+      # 自定义域名生效时 root 使用 /，与 GitHub Pages 自定义域名的访问路径一致。
       - name: Set site URL in _config.yml
+        id: siteurl
         env:
           SITE_URL_VAR: ${{ vars.SITE_URL }}
         run: |
           OWNER="${{ github.repository_owner }}"
           NAME="${{ github.repository }}"; NAME="${NAME##*/}"
+          CUR="$(grep -E '^url:' _config.yml | head -1 | sed -E "s/^url:[[:space:]]*//; s/[\"']//g; s|[[:space:]]*$||")"
           if [ -n "$SITE_URL_VAR" ]; then
-            URL="${SITE_URL_VAR%/}"; ROOT="/"
+            URL="${SITE_URL_VAR%/}"; ROOT="/"; SRC="仓库变量 SITE_URL"
+          elif [ -n "$CUR" ] && ! echo "$CUR" | grep -q 'github\.io'; then
+            URL="${CUR%/}"; ROOT="/"; SRC="_config.yml 自定义域名"
           elif [ "$(echo "$NAME" | tr 'A-Z' 'a-z')" = "$(echo "$OWNER" | tr 'A-Z' 'a-z').github.io" ]; then
-            URL="https://$OWNER.github.io"; ROOT="/"
+            URL="https://$OWNER.github.io"; ROOT="/"; SRC="按仓库推导"
           else
-            URL="https://$OWNER.github.io/$NAME"; ROOT="/$NAME/"
+            URL="https://$OWNER.github.io/$NAME"; ROOT="/$NAME/"; SRC="按仓库推导"
           fi
           sed -i "/^root: /d" _config.yml
           sed -i "s|^url: .*|url: $URL\nroot: $ROOT|" _config.yml
-          echo "site url -> $URL  root -> $ROOT"
+          echo "site url -> $URL  root -> $ROOT  ($SRC)"
+          echo "domain=$(echo "$URL" | sed -E 's#^https?://##; s#/.*$##')" >> $GITHUB_OUTPUT
 
       - name: Generate site
         run: npx hexo generate
@@ -111,7 +121,7 @@ jobs:
   # 使用社区项目 Waline_On_Worker (https://github.com/lsy-404/Waline_On_Worker)
   deploy-waline:
     runs-on: ubuntu-latest
-    needs: prepare-d1
+    needs: [prepare-d1, build-blog]
     outputs:
       waline_url: ${{ steps.deploy.outputs.waline_url }}
     steps:
@@ -138,18 +148,22 @@ jobs:
         env:
           # D1 id 由 prepare-d1 任务自动查询/创建，fork 后无需手填
           D1_DB_ID: ${{ needs.prepare-d1.outputs.d1_id }}
-          SITE_URL_VAR: ${{ vars.SITE_URL }}
         run: |
-          # SECURE_DOMAINS：优先取仓库 Variables 的 SITE_URL 域名，否则用仓库的 GitHub Pages 域名
-          DOMAIN="$(echo "$SITE_URL_VAR" | sed -E 's#^https?://##; s#/.*$##')"
-          if [ -z "$DOMAIN" ]; then DOMAIN="${{ github.repository_owner }}.github.io"; fi
+          # SECURE_DOMAINS：自定义域名 + GitHub Pages 域名都放行，避免评论 CORS 失败
+          DOMAIN="${{ needs.build-blog.outputs.site_domain }}"
+          GH_DOMAIN="${{ github.repository_owner }}.github.io"
+          if [ -z "$DOMAIN" ]; then DOMAIN="$GH_DOMAIN"; fi
+          case ",$DOMAIN," in
+            *",$GH_DOMAIN,"*) SECURE="$DOMAIN" ;;
+            *) SECURE="$DOMAIN,$GH_DOMAIN" ;;
+          esac
           cat > wrangler.toml << EOF
           name = "waline-worker"
           main = "src/index.ts"
           compatibility_date = "2026-06-03"
 
           [vars]
-          SECURE_DOMAINS = "$DOMAIN"
+          SECURE_DOMAINS = "$SECURE"
 
           [[d1_databases]]
           binding = "DB"
@@ -243,8 +257,8 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           workingDirectory: blog-worker
-          # GH_REPO 自动取当前仓库；PAGES_URL、SITE_URL 由 Worker 运行时自动推导，无需配置
-          command: "deploy --var GH_REPO:${{ github.repository }}"
+          # GH_REPO 自动取当前仓库；SITE_URL 取本次构建识别到的站点域名（自定义域名优先）
+          command: "deploy --var GH_REPO:${{ github.repository }} --var SITE_URL:https://${{ needs.build-blog.outputs.site_domain }}"
           secrets: |
             GH_TOKEN
         env:
