@@ -138,8 +138,14 @@ a{color:var(--accent);text-decoration:none}
 .wk-comment .status.waiting{background:#fff3cd;color:#8a6d00}
 .wk-comment .status.approved{background:#d1f5d3;color:#147d19}
 .wk-comment .status.spam{background:#fde3e3;color:#d1241f}
+.wk-comment .status.admin{background:rgba(249,115,22,.16);color:#c2410c}
 .wk-comment .ops{margin-top:4px;display:flex;gap:6px}
 .wk-comment .ip{font-size:10px;color:var(--muted);margin-left:4px}
+/* 站长回复输入框（内联展开在评论下方） */
+.wk-comment .reply-box{margin-top:6px;display:flex;flex-direction:column;gap:6px}
+.wk-comment .reply-box textarea{width:100%;min-height:64px;padding:6px 8px;border:1px solid var(--border);border-radius:3px;background:var(--input-bg);color:var(--fg);font:inherit;resize:vertical;outline:none}
+.wk-comment .reply-box textarea:focus{border-color:var(--accent)}
+.wk-comment .reply-box .reply-ops{display:flex;gap:6px}
 /* 编辑区 */
 #edt{min-height:480px;border:1px solid var(--border);border-radius:3px}
 .hidden{display:none!important}
@@ -3256,22 +3262,26 @@ async function loadComments(){
   const data=(r.data&&r.data.data)||{};
   const items=data.data||[];
   if(!items.length){ box.innerHTML='<div class="empty">暂无评论</div>'; return; }
+  const nickById=new Map(items.map(it=>[it.objectId,it.nick]));
   box.innerHTML='';
   items.forEach(it=>{
     const el=document.createElement('div');
     el.className='wk-comment';
     const st=it.status==='approved'?'<span class="status approved">已通过</span>':(it.status==='spam'?'<span class="status spam">垃圾</span>':'<span class="status waiting">待审批</span>');
+    const adminBadge=(it.is_admin||it.type==='administrator')?'<span class="status admin">站长回复</span>':'';
+    const replyTo=(it.pid&&nickById.get(it.pid))?'<span class="path">回复 @'+esc(nickById.get(it.pid))+'</span>':'';
     const time=it.insertedAt?new Date(it.insertedAt).toLocaleString('zh-CN',{hour12:false}):'';
-    let ops='';
+    let ops='<button class="wk-btn sm" data-a="reply">回复</button>';
     if(it.status!=='approved') ops+='<button class="wk-btn sm" data-a="approve">通过</button>';
     if(it.status!=='spam') ops+='<button class="wk-btn act sm" data-a="spam">垃圾</button>';
     ops+='<button class="wk-btn danger sm" data-a="del">删除</button>';
     el.innerHTML='<input type="checkbox" class="cmtCheck" style="width:auto;flex-shrink:0;align-self:flex-start;margin-top:3px">'+
       '<div class="avatar">'+(it.avatar?'<img src="'+esc(it.avatar)+'">':'')+'</div>'+
       '<div style="flex:1;min-width:0">'+
-        '<div><span class="nick">'+esc(it.nick)+'</span><span class="mail">'+esc(it.mail||'')+'</span><span class="ip">'+esc(it.ip||'')+'</span><span class="path">'+esc(it.url||'')+'</span><span class="time">'+esc(time)+'</span>'+st+'</div>'+
+        '<div><span class="nick">'+esc(it.nick)+'</span>'+adminBadge+replyTo+'<span class="mail">'+esc(it.mail||'')+'</span><span class="ip">'+esc(it.ip||'')+'</span><span class="path">'+esc(it.url||'')+'</span><span class="time">'+esc(time)+'</span>'+st+'</div>'+
         '<div class="body">'+(it.comment||'')+'</div>'+
         '<div class="ops">'+ops+'</div>'+
+        '<div class="reply-box hidden"><textarea placeholder="以站长身份回复该评论（发布后直接显示在评论区，并标注站长回复）"></textarea><div class="reply-ops"><button class="wk-btn act sm" data-a="sendReply">发送回复</button><button class="wk-btn sm" data-a="cancelReply">取消</button></div></div>'+
       '</div>';
     el.dataset.id=it.objectId;
     box.appendChild(el);
@@ -3308,6 +3318,29 @@ async function onCommentAction(e){
   const btn=e.target.closest('button'); if(!btn) return;
   const card=btn.closest('.wk-comment'); if(!card) return;
   const id=card.dataset.id, a=btn.dataset.a; if(!id) return;
+  if(a==='reply'){
+    const box=card.querySelector('.reply-box'); if(!box) return;
+    box.classList.toggle('hidden');
+    if(!box.classList.contains('hidden')){ const ta=box.querySelector('textarea'); if(ta) ta.focus(); }
+    return;
+  }
+  if(a==='cancelReply'){
+    const box=card.querySelector('.reply-box'); if(box) box.classList.add('hidden');
+    return;
+  }
+  if(a==='sendReply'){
+    const box=card.querySelector('.reply-box');
+    const ta=box&&box.querySelector('textarea');
+    const text=((ta&&ta.value)||'').trim();
+    if(!text){ toast('请输入回复内容'); if(ta) ta.focus(); return; }
+    const old=btn.textContent;
+    btn.disabled=true; btn.textContent='发送中…';
+    const r=await api('/admin/api/comment/reply',{method:'POST',body:JSON.stringify({parentId:Number(id),comment:text})});
+    btn.disabled=false; btn.textContent=old;
+    if(r.ok){ toast('回复已发布'); loadComments(); }
+    else toast((r.data&&r.data.error)||'回复失败',true);
+    return;
+  }
   if(a==='del'&&!await askConfirm('确认删除该评论？')) return;
   if(a==='approve'||a==='spam'){
     const r=await api('/waline/api/comment/'+id,{method:'PUT',body:JSON.stringify({status:a==='approve'?'approved':'spam'})});

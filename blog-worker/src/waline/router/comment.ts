@@ -832,8 +832,13 @@ async function formatComment(
 		url: row.url,
 		sticky: Boolean(row.sticky),
 		user_id: row.user_id,
-		type: user?.type || (row.user_id ? "guest" : ""),
+		// 站长在后台直接回复的评论：前台按管理员身份展示（头像右下角管理员图标 + 昵称「站长」）
+		type:
+			row.is_admin === 1
+				? "administrator"
+				: user?.type || (row.user_id ? "guest" : ""),
 		label: user?.label || "",
+		is_admin: row.is_admin === 1,
 	};
 
 	// 仅当 pid/rid 存在时才返回，避免返回 null 导致 @waline/client 把根评论误判为回复，

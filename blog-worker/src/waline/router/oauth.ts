@@ -19,8 +19,18 @@ oauthRoutes.get("/", async (c) => {
 	const type = c.req.query("type");
 	const code = c.req.query("code");
 	const state = c.req.query("state") || "";
-	const redirect = sanitizeRedirect(c.req.query("redirect"));
 	const oauthUrl = c.env.OAUTH_URL || DEFAULT_OAUTH_URL;
+
+	// 当前 oauth 端点的真实路径（可能是 /waline/api/oauth 或 /waline/oauth），
+	// 回调地址与默认跳转都必须基于它，否则会丢挂载前缀落到站点首页。
+	const reqUrl = new URL(c.req.url);
+	const oauthPath = reqUrl.pathname.replace(/\/+$/, "") || "/";
+	const basePath = oauthPath.replace(/\/api\/oauth$/, "").replace(/\/oauth$/, "");
+	const redirect = sanitizeRedirect(
+		c.req.query("redirect"),
+		reqUrl.origin,
+		`${basePath}/ui`,
+	);
 
 	if (!type) {
 		return c.json({ errno: 1, errmsg: "type is required" }, 400);
@@ -29,8 +39,7 @@ oauthRoutes.get("/", async (c) => {
 	// Step 1: No code → redirect to OAuth provider
 	if (!code) {
 		// Build callback URL (back to this endpoint with redirect & type preserved)
-		const reqUrl = new URL(c.req.url);
-		const callbackUrl = `${reqUrl.origin}/api/oauth?redirect=${encodeURIComponent(redirect)}&type=${encodeURIComponent(type)}`;
+		const callbackUrl = `${reqUrl.origin}${oauthPath}?redirect=${encodeURIComponent(redirect)}&type=${encodeURIComponent(type)}`;
 
 		// Match original: ${oauthUrl}/${type}?redirect=${callbackUrl}&state=${token}
 		// state passes through the user's JWT token (for account linking from profile page)
@@ -50,7 +59,7 @@ oauthRoutes.get("/", async (c) => {
 		});
 
 		if (!resp.ok) {
-			return c.redirect(`${redirect}?error=oauth_failed`);
+			return c.redirect(withQuery(redirect, { error: "oauth_failed" }));
 		}
 
 		const oauthUser = (await resp.json()) as Record<string, any>;
@@ -67,7 +76,7 @@ oauthRoutes.get("/", async (c) => {
 		);
 
 		if (!socialId) {
-			return c.redirect(`${redirect}?error=oauth_no_id`);
+			return c.redirect(withQuery(redirect, { error: "oauth_no_id" }));
 		}
 
 		const socialField = getSocialField(type);
@@ -93,7 +102,9 @@ oauthRoutes.get("/", async (c) => {
 							.first();
 
 						if (conflict) {
-							return c.redirect(`${redirect}?error=oauth_already_bound`);
+							return c.redirect(
+								withQuery(redirect, { error: "oauth_already_bound" }),
+							);
 						}
 
 						await c.env.DB.prepare(
@@ -103,10 +114,7 @@ oauthRoutes.get("/", async (c) => {
 							.run();
 
 						const token = await signJwt({ id: payload.id }, jwtSecret);
-						const sep = redirect.includes("?") ? "&" : "?";
-						return c.redirect(
-							`${redirect}${sep}token=${encodeURIComponent(token)}`,
-						);
+						return c.redirect(withQuery(redirect, { token }));
 					}
 				}
 			} catch {
@@ -171,32 +179,56 @@ oauthRoutes.get("/", async (c) => {
 		}
 
 		if (!user) {
-			return c.redirect(`${redirect}?error=oauth_create_failed`);
+			return c.redirect(withQuery(redirect, { error: "oauth_create_failed" }));
 		}
 
 		if ((user.type as string) === "banned") {
-			return c.redirect(`${redirect}?error=account_banned`);
+			return c.redirect(withQuery(redirect, { error: "account_banned" }));
 		}
 
 		// Issue JWT
 		if (!jwtSecret) {
-			return c.redirect(`${redirect}?error=server_error`);
+			return c.redirect(withQuery(redirect, { error: "server_error" }));
 		}
 
 		const token = await signJwt({ id: user.id as number }, jwtSecret);
 
 		// Return just JWT token string (matching original Waline)
-		const sep = redirect.includes("?") ? "&" : "?";
-		return c.redirect(`${redirect}${sep}token=${encodeURIComponent(token)}`);
+		return c.redirect(withQuery(redirect, { token }));
 	} catch {
-		return c.redirect(`${redirect}?error=oauth_error`);
+		return c.redirect(withQuery(redirect, { error: "oauth_error" }));
 	}
 });
 
-/** Ensure redirect is a safe relative path (prevent open redirect attacks) */
-function sanitizeRedirect(input: string | undefined): string {
-	if (!input?.startsWith("/") || input.startsWith("//")) return "/ui";
-	return input;
+/** 在跳转地址后追加参数（兼容带查询串 / 绝对 URL 的回跳地址） */
+function withQuery(url: string, params: Record<string, string>): string {
+	const sep = url.includes("?") ? "&" : "?";
+	return `${url}${sep}${new URLSearchParams(params).toString()}`;
+}
+
+/**
+ * 校验回跳地址：
+ * - 允许站点内相对路径（如 /waline/ui/profile）
+ * - 允许同源的绝对地址（Waline 客户端会把当前页面 URL 原样传过来）
+ * 其他地址一律回落到后台页面，避免 token 被带到外部站点。
+ */
+function sanitizeRedirect(
+	input: string | undefined,
+	origin: string,
+	fallback: string,
+): string {
+	const raw = (input || "").trim();
+	if (!raw) return fallback;
+	if (raw.startsWith("/") && !raw.startsWith("//")) return raw;
+	try {
+		const u = new URL(raw);
+		if ((u.protocol === "http:" || u.protocol === "https:") && u.origin === origin) {
+			return u.toString();
+		}
+	} catch {
+		// 非法 URL，走默认值
+	}
+	return fallback;
 }
 
 function getSocialField(type: string): string | null {

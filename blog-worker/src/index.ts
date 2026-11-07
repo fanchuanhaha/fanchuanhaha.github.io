@@ -7,6 +7,7 @@ import { unzipSync } from "fflate";
 import { renderAdminPage } from "./admin-ui.js";
 import { renderAdminLoginPage } from "./admin-login.js";
 import { sendMail } from "./mail/smtp.js";
+import { renderMarkdown } from "./waline/utils/markdown.js";
 
 // 整合后的完整 Bindings：博客文章(gh + D1 评论) + Waline(JWT/D1)
 type Bindings = Env & {
@@ -766,6 +767,88 @@ app.post("/api/visit", async (c) => {
   } catch (e) {
     console.error("visit record failed", e);
     return visitJson({ ok: false, today: 0, total: 0 });
+  }
+});
+
+// ---------- 3.9 后台直接回复评论（站长回复）----------
+// 以管理员身份写入回复：默认已通过、前台显示站长标识、后台可看到「站长回复」标记。
+let commentAdminColumnReady = false;
+async function ensureCommentAdminColumn(db: D1Database): Promise<void> {
+  if (commentAdminColumnReady) return;
+  try {
+    await db
+      .prepare(
+        `ALTER TABLE "wl_Comment" ADD COLUMN "is_admin" INTEGER NOT NULL DEFAULT 0`,
+      )
+      .run();
+  } catch {
+    // 列已存在（迁移已执行）时忽略
+  }
+  commentAdminColumnReady = true;
+}
+
+app.post("/admin/api/comment/reply", async (c) => {
+  if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
+  const body = (await c.req.json().catch(() => ({}))) as {
+    parentId?: unknown;
+    comment?: unknown;
+  };
+  const parentId = parseInt(String(body.parentId ?? ""), 10);
+  const text = String(body.comment ?? "").trim();
+  if (!Number.isFinite(parentId) || parentId <= 0) {
+    return json({ error: "缺少被回复的评论" }, 400);
+  }
+  if (!text) return json({ error: "回复内容不能为空" }, 400);
+  if (text.length > 65536) return json({ error: "回复内容过长（最多 64KB）" }, 400);
+
+  const db = (c.env as Bindings).DB;
+  try {
+    await ensureCommentAdminColumn(db);
+    const parent = await db
+      .prepare(`SELECT * FROM "wl_Comment" WHERE id = ?`)
+      .bind(parentId)
+      .first<Record<string, any>>();
+    if (!parent) return json({ error: "被回复的评论不存在" }, 404);
+
+    const rid = (parent.rid as number) || parentId;
+    const ip = c.req.header("CF-Connecting-IP") || "";
+    const result = await db
+      .prepare(
+        `INSERT INTO "wl_Comment"
+          (user_id, comment, orig, ip, link, mail, nick, pid, rid, sticky, status, "like", ua, url, is_admin)
+         VALUES (NULL, ?, ?, ?, '', '', ?, ?, ?, 0, 'approved', 0, '', ?, 1)`,
+      )
+      .bind(
+        renderMarkdown(text),
+        text,
+        ip,
+        "站长",
+        parentId,
+        rid,
+        (parent.url as string) || "",
+      )
+      .run();
+    if (!result.success) return json({ error: "回复失败" }, 500);
+
+    const row = await db
+      .prepare(`SELECT * FROM "wl_Comment" WHERE id = last_insert_rowid()`)
+      .first<Record<string, any>>();
+    return json({
+      ok: true,
+      data: {
+        objectId: row?.id,
+        comment: row?.comment,
+        orig: row?.orig,
+        nick: "站长",
+        pid: parentId,
+        rid,
+        url: row?.url,
+        status: "approved",
+        is_admin: 1,
+      },
+    });
+  } catch (e) {
+    return json({ error: String(e) }, 500);
   }
 });
 

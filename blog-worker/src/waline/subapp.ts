@@ -80,6 +80,8 @@ app.route("/api/user", userRoutes);
 app.route("/api/token", tokenRoutes);
 app.route("/api/settings", settingsRoutes);
 app.route("/api/oauth", oauthRoutes);
+// 兼容直接访问 ${serverURL}/oauth 的老客户端（新版客户端走 /ui/login → /api/oauth）
+app.route("/oauth", oauthRoutes);
 app.route("/api/db", dbRoutes);
 
 // Worker custom settings page — auth is enforced client-side so direct URL access works

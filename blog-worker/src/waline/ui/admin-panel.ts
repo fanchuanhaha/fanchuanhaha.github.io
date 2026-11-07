@@ -18,12 +18,13 @@ export async function getAdminPage(
 	const workerDisplay = settings.worker_display || "admin";
 	const adminVersion = (settings.waline_admin_version || "latest").trim();
 	const url = new URL(requestUrl);
-	const serverURL = `${url.origin}/api/`;
+	// 后台页面可能挂在 /waline/ui 下：API 基址必须保留挂载前缀（原版为 ${serverURL}/api/）
+	const basePath = url.pathname.replace(/\/ui(\/.*)?$/, "");
+	const serverURL = `${url.origin}${basePath}/api/`;
 	const siteName = env.SITE_NAME || "";
 	const siteUrl = env.SITE_URL || "";
 	const recaptchaV3Key = env.RECAPTCHA_V3_KEY || "";
 	const turnstileKey = env.TURNSTILE_KEY || "";
-	const origin = url.origin;
 
 	const showWorker = workerDisplay !== "disabled";
 	const showAlways = workerDisplay === "always";
@@ -58,6 +59,8 @@ ${showWorker ? `  <style>.wk-badge{display:inline-block;margin-right:8px;padding
     window.SITE_URL = ${JSON.stringify(siteUrl || undefined)};
     window.recaptchaV3Key = ${JSON.stringify(recaptchaV3Key || undefined)};
     window.turnstileKey = ${JSON.stringify(turnstileKey || undefined)};
+    // 仅展示可用的第三方登录（lithub OAuth 代理未配置 Google，隐藏避免报错）
+    window.oauthServices = [{ name: 'github' }, { name: 'twitter' }, { name: 'facebook' }, { name: 'weibo' }, { name: 'qq' }];
   </script>
   <!-- Block @waline/vercel upgrade notification: irrelevant for Workers deployment.
        The admin header fetches registry.npmjs.org to compare x-waline-version against
@@ -82,7 +85,8 @@ ${
 	showWorker
 		? `  <script>
   (function(){
-    var ORIGIN = ${JSON.stringify(origin)};
+    var API = ${JSON.stringify(serverURL)};
+    var SETTINGS_URL = ${JSON.stringify(`${basePath}/ui/worker-setting`)};
     var ALWAYS = ${JSON.stringify(showAlways)};
     var menuDone = false, badgeDone = false;
 
@@ -101,7 +105,7 @@ ${
       if (menuDone) return;
       menuDone = true;
       var fab = document.createElement('a');
-      fab.href = '/ui/worker-setting';
+      fab.href = SETTINGS_URL;
       fab.title = 'Worker 设置';
       fab.setAttribute('aria-label', 'Worker 设置');
       fab.onclick = function(e) {
@@ -141,7 +145,7 @@ ${
       var tk = window.TOKEN || localStorage.getItem('TOKEN') || sessionStorage.getItem('TOKEN');
       if (!tk && !ALWAYS) return;
       if (tk && !menuDone) {
-        fetch(ORIGIN + '/api/token', {
+        fetch(API + 'token', {
           headers: { Authorization: 'Bearer ' + tk }
         }).then(function(r){ return r.json(); }).then(function(d){
           if (d.errno === 0 && d.data && d.data.type === 'administrator') {
