@@ -52,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       site_domain: ${{ steps.siteurl.outputs.domain }}
+      custom_domain: ${{ steps.siteurl.outputs.custom }}
     steps:
       - uses: actions/checkout@v4
 
@@ -76,10 +77,11 @@ jobs:
           OWNER="${{ github.repository_owner }}"
           NAME="${{ github.repository }}"; NAME="${NAME##*/}"
           CUR="$(grep -E '^url:' _config.yml | head -1 | sed -E "s/^url:[[:space:]]*//; s/[\"']//g; s|[[:space:]]*$||")"
+          CUSTOM=""
           if [ -n "$SITE_URL_VAR" ]; then
-            URL="${SITE_URL_VAR%/}"; ROOT="/"; SRC="仓库变量 SITE_URL"
+            URL="${SITE_URL_VAR%/}"; ROOT="/"; SRC="仓库变量 SITE_URL"; CUSTOM="$URL"
           elif [ -n "$CUR" ] && ! echo "$CUR" | grep -q 'github\.io'; then
-            URL="${CUR%/}"; ROOT="/"; SRC="_config.yml 自定义域名"
+            URL="${CUR%/}"; ROOT="/"; SRC="_config.yml 自定义域名"; CUSTOM="$URL"
           elif [ "$(echo "$NAME" | tr 'A-Z' 'a-z')" = "$(echo "$OWNER" | tr 'A-Z' 'a-z').github.io" ]; then
             URL="https://$OWNER.github.io"; ROOT="/"; SRC="按仓库推导"
           else
@@ -89,6 +91,7 @@ jobs:
           sed -i "s|^url: .*|url: $URL\nroot: $ROOT|" _config.yml
           echo "site url -> $URL  root -> $ROOT  ($SRC)"
           echo "domain=$(echo "$URL" | sed -E 's#^https?://##; s#/.*$##')" >> $GITHUB_OUTPUT
+          echo "custom=$(echo "$CUSTOM" | sed -E 's#^https?://##; s#/.*$##')" >> $GITHUB_OUTPUT
 
       - name: Generate site
         run: npx hexo generate
@@ -103,6 +106,21 @@ jobs:
             || gh api -X PUT repos/${REPO}/pages \
                -f "source[branch]=gh-pages" -f "source[path]=/" 2>/dev/null \
             || echo "pages enable maybe already done (api may need manual)"
+
+      # 配置了自定义域名时，自动把它写进 GitHub Pages 的 CNAME（否则域名会 404）
+      - name: Set Pages custom domain
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          DOMAIN="${{ steps.siteurl.outputs.custom }}"
+          if [ -z "$DOMAIN" ]; then echo "未配置自定义域名，跳过"; exit 0; fi
+          echo "设置自定义域名 -> $DOMAIN"
+          echo "$DOMAIN" > public/CNAME
+          gh api -X PUT repos/${REPO}/pages \
+            -f "cname=$DOMAIN" -f "source[branch]=gh-pages" -f "source[path]=/" \
+            && echo "已设置 CNAME" \
+            || echo "::warning::自动设置 CNAME 失败，请在仓库 Settings → Pages 手动填写 $DOMAIN"
 
       - name: Deploy to gh-pages
         env:
