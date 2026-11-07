@@ -529,14 +529,21 @@ async function visitStats(db: D1Database) {
   return { today: row?.today ?? 0, total: row?.total ?? 0 };
 }
 
-// 最近 days 天的访问趋势（缺失日期补 0）
-async function visitDaily(db: D1Database, days: number) {
+// 最近 days 天的访问趋势（缺失日期补 0）；传 site 时只看该站点
+async function visitDaily(db: D1Database, days: number, site = "") {
   await ensureVisitTables(db);
   const from = visitDay(days - 1);
-  const rows = await db
-    .prepare(`SELECT "day","count" FROM "wl_Visit" WHERE "day">=?1 ORDER BY "day" ASC`)
-    .bind(from)
-    .all<{ day: string; count: number }>();
+  const rows = site
+    ? await db
+        .prepare(
+          `SELECT "day","count" FROM "wl_VisitSite" WHERE "site"=?1 AND "day">=?2 ORDER BY "day" ASC`
+        )
+        .bind(site, from)
+        .all<{ day: string; count: number }>()
+    : await db
+        .prepare(`SELECT "day","count" FROM "wl_Visit" WHERE "day">=?1 ORDER BY "day" ASC`)
+        .bind(from)
+        .all<{ day: string; count: number }>();
   const map = new Map<string, number>();
   (rows.results || []).forEach((r) => map.set(r.day, r.count));
   const series: { day: string; count: number }[] = [];
@@ -609,7 +616,7 @@ async function visitSiteStats(db: D1Database, days: number) {
   await ensureVisitTables(db);
   const day = visitDay();
   const from = visitDay(days - 1);
-  const [rangeRows, totalRows, dayRow] = await Promise.all([
+  const [rangeRows, totalRows, dayRow, allRow] = await Promise.all([
     db
       .prepare(
         `SELECT "site",
@@ -628,6 +635,13 @@ async function visitSiteStats(db: D1Database, days: number) {
       )
       .bind(from)
       .first<{ range: number }>(),
+    db
+      .prepare(
+        `SELECT (SELECT COALESCE("count",0) FROM "wl_Visit" WHERE "day"=?1) AS "today",
+                (SELECT COALESCE(SUM("count"),0) FROM "wl_Visit") AS "total"`
+      )
+      .bind(day)
+      .first<{ today: number; total: number }>(),
   ]);
   const totals = new Map<string, number>();
   (totalRows.results || []).forEach((r) => totals.set(r.site, Number(r.total) || 0));
@@ -643,6 +657,8 @@ async function visitSiteStats(db: D1Database, days: number) {
     days,
     sites,
     rangeTotal,
+    todayAll: Number(allRow?.today) || 0,
+    totalAll: Number(allRow?.total) || 0,
     // 历史（升级前未区分站点的记录）保留并在后台单独展示
     legacy: Math.max(0, rangeTotal - known),
   };
@@ -831,9 +847,16 @@ app.get("/admin/api/visit/daily", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
   const raw = parseInt(c.req.query("days") || "30", 10);
   const days = Number.isFinite(raw) ? Math.min(Math.max(raw, 1), 3650) : 30;
+  const site = normalizeSite(c.req.query("site") || "");
   try {
-    const series = await visitDaily((c.env as Bindings).DB, days);
-    return json({ ok: true, days, series, sum: series.reduce((a, b) => a + b.count, 0) });
+    const series = await visitDaily((c.env as Bindings).DB, days, site);
+    return json({
+      ok: true,
+      days,
+      site,
+      series,
+      sum: series.reduce((a, b) => a + b.count, 0),
+    });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
   }

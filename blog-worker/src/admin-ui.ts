@@ -167,6 +167,9 @@ a{color:var(--accent);text-decoration:none}
 .wk-table th{text-align:left;font-size:11px;color:var(--muted);font-weight:500;padding:8px 6px;border-bottom:1px solid var(--border);white-space:nowrap}
 .wk-table td{padding:8px 6px;border-bottom:1px solid var(--border);word-break:break-all}
 .wk-table tr:last-child td{border-bottom:none}
+.visit-site-row{cursor:pointer}
+.visit-site-row:hover td{background:var(--hover)}
+.visit-site-row.active td{background:var(--hover);box-shadow:inset 2px 0 0 var(--accent)}
 .wk-tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:3px;border:1px solid var(--border);color:var(--muted)}
 .wk-tag.ok{color:#1a7f37;border-color:rgba(26,127,55,.35);background:rgba(26,127,55,.08)}
 .wk-tag.wait{color:#b45309;border-color:rgba(180,83,9,.35);background:rgba(180,83,9,.08)}
@@ -638,6 +641,8 @@ function pollThemeClone(target){
 
 // ---------- 访问量（仅管理员可见）----------
 let visitDays = 30;
+// 折线图当前查看的站点（空 = 全部站点）
+let visitSite = '';
 
 // 折线图：用内联 SVG 绘制最近 N 天访问量
 function renderVisitChart(series){
@@ -728,8 +733,10 @@ async function loadVisit(){
   }catch(e){}
   const chart = $('#visitChart'), sumEl = $('#visitRangeSum');
   if(chart) chart.innerHTML = '<div class="empty">加载中...</div>';
+  const scope = $('#visitChartScope');
+  if(scope) scope.textContent = visitSite ? ' · ' + visitSite : ' · 全部站点';
   try{
-    const r = await api('/admin/api/visit/daily?days=' + visitDays);
+    const r = await api('/admin/api/visit/daily?days=' + visitDays + (visitSite ? '&site=' + encodeURIComponent(visitSite) : ''));
     if(r.ok && r.data){
       renderVisitChart(r.data.series || []);
       if(sumEl) sumEl.textContent = (r.data.sum == null ? '-' : r.data.sum);
@@ -764,13 +771,24 @@ async function loadVisitSites(){
     const known = sites.reduce((a,b) => a + (Number(b.range)||0), 0);
     const denom = Math.max(1, Number(d.rangeTotal) || known);
     const pct = v => ((Number(v)||0) / denom * 100);
+    const sel = visitSite;
     let h = '<div style="overflow-x:auto"><table class="wk-table"><thead><tr>' +
       '<th>来源站点</th><th style="text-align:right">今日</th><th style="text-align:right">近 '+esc(String(visitDays))+' 天</th>' +
       '<th style="text-align:right">累计</th><th style="text-align:right">区间占比</th><th style="min-width:110px">占比</th>' +
       '</tr></thead><tbody>';
+    // 全部站点：点击可取消单个站点的筛选
+    h += '<tr class="visit-site-row' + (sel ? '' : ' active') + '" data-site="" onclick="selectVisitSite(this.dataset.site)">' +
+      '<td><b>全部站点</b></td>' +
+      '<td style="text-align:right">' + (Number(d.todayAll)||0) + '</td>' +
+      '<td style="text-align:right">' + (Number(d.rangeTotal)||0) + '</td>' +
+      '<td style="text-align:right">' + (Number(d.totalAll)||0) + '</td>' +
+      '<td style="text-align:right">100.0%</td>' +
+      '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--accent);width:100%"></div></div></td>' +
+      '</tr>';
     sites.forEach(s => {
       const p = pct(s.range);
-      h += '<tr><td><b>' + esc(s.site) + '</b></td>' +
+      h += '<tr class="visit-site-row' + (sel === s.site ? ' active' : '') + '" data-site="' + esc(s.site) + '" onclick="selectVisitSite(this.dataset.site)" title="点击查看该站点的访问趋势">' +
+        '<td><b>' + esc(s.site) + '</b></td>' +
         '<td style="text-align:right">' + (Number(s.today)||0) + '</td>' +
         '<td style="text-align:right">' + (Number(s.range)||0) + '</td>' +
         '<td style="text-align:right">' + (Number(s.total)||0) + '</td>' +
@@ -793,6 +811,13 @@ async function loadVisitSites(){
   }catch(e){
     box.innerHTML = '<div class="empty">加载失败</div>';
   }
+}
+
+// 点击来源站点：折线图切换到该站点（再次点击同一站点或点「全部站点」恢复全部）
+function selectVisitSite(site){
+  const s = String(site || '');
+  visitSite = (s && visitSite === s) ? '' : s;
+  loadVisit();
 }
 
 // 快捷按钮：7/30/90/365
@@ -4448,7 +4473,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
     </div></div>
 
     <div class="wk-card">
-      <h3 class="wk-title">访问趋势（最近 <span id="visitDaysLabel">30</span> 天）</h3>
+      <h3 class="wk-title">访问趋势（最近 <span id="visitDaysLabel">30</span> 天<span id="visitChartScope"> · 全部站点</span>）</h3>
       <div class="filters" style="margin:0 0 10px">
         <button class="wk-btn ghost sm" onclick="setVisitDays(7)">7 天</button>
         <button class="wk-btn ghost sm" onclick="setVisitDays(30)">30 天</button>
@@ -4463,7 +4488,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
 
     <div class="wk-card">
       <h3 class="wk-title">来源站点明细（最近 <span id="visitSiteDaysLabel">30</span> 天）</h3>
-      <p class="wk-label" style="margin:0 0 10px">按访问来源域名统计，同一访客同一天在同一站点只计一次；升级前的历史记录未区分站点，单列显示。</p>
+      <p class="wk-label" style="margin:0 0 10px">按访问来源域名统计，同一访客同一天在同一站点只计一次；升级前的历史记录未区分站点，单列显示。<b>点击站点行可查看该站点的访问趋势</b>，再点一次恢复全部站点。</p>
       <div id="visitSiteList"><div class="empty">加载中...</div></div>
     </div>
   </div>
@@ -4879,8 +4904,8 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
           </li>
           <li>
             <div>
-              <div class="name"><span class="chip">GET</span> /admin/api/visit/daily?days=30</div>
-              <div class="meta">按天趋势（需管理员登录）。days 取值 1-3650，返回 {ok, days, sum, series:[{day,count}]}</div>
+              <div class="name"><span class="chip">GET</span> /admin/api/visit/daily?days=30&amp;site=1.com</div>
+              <div class="meta">按天趋势（需管理员登录）。days 取值 1-3650；可选 site 只看某个站点。返回 {ok, days, site, sum, series:[{day,count}]}</div>
             </div>
           </li>
           <li>
