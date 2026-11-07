@@ -5,7 +5,7 @@ keywords: null
 author: Fanchuanhaha
 language: zh-CN
 timezone: ''
-url: https://blog.902786.xyz
+url: https://blog.wn5.top
 permalink: ':year/:month/:day/:title/'
 permalink_defaults: null
 pretty_urls:
@@ -61,7 +61,7 @@ ignore: null
 theme: indigo
 deploy:
   type: git
-  repo: https://github.com/kf1145fan/kf1145fan.github.io.git
+  repo: https://github.com/fanchuanhaha/kf1145fan.github.io.git
   branch: gh-pages
 
 json_content:
