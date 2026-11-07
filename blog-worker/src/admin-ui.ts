@@ -1011,7 +1011,10 @@ async function loadAiSettings(){
       }
       aiCfPicked = Array.isArray(d.cfModels) ? d.cfModels.slice() : [];
       if(!aiCfModels.length) aiCfModels = aiCfPicked.slice();
-      aiCfToggle(ce ? ce.checked : aiCfEnabledCfg);
+      const cfOn = ce ? ce.checked : aiCfEnabledCfg;
+      aiCfToggle(cfOn);
+      // 未启用但已有部署凭据时也预先查一次额度，方便直接看到剩余用量
+      if(!cfOn && d.cfFromEnv) aiCfQuota(false);
     }
   }catch(e){}
 }
@@ -1045,6 +1048,45 @@ async function saveAiSettings(){
 function aiCfToggle(on){
   const box = $('#aiCfBox'); if(box) box.style.display = on ? '' : 'none';
   if(on){ aiCfRenderModels(); aiCfQuota(false); }
+}
+// 最近一次查到的今日额度（Neurons）：AI 设置与 AI 助手共用
+let aiCfQuotaState = null;
+function aiCfFmt(n){
+  return String(Number(n) || 0).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');
+}
+// AI 助手模型下拉里「Cloudflare Workers AI」分组标题（带剩余额度）
+function aiCfGroupLabel(){
+  const s = aiCfQuotaState;
+  return s ? ('Cloudflare Workers AI（剩余 ' + aiCfFmt(s.left) + ' / ' + aiCfFmt(s.limit) + '）') : 'Cloudflare Workers AI';
+}
+// 把额度同时同步到：设置页额度框 / 设置页顶部 / 助手底部提示 / 助手模型分组标题
+function aiCfApplyQuota(used, limit, left){
+  aiCfQuotaState = { used: Number(used) || 0, limit: Number(limit) || 10000, left: Number(left) || 0 };
+  const s = aiCfQuotaState;
+  const box = $('#aiCfQuotaBox');
+  if(box) box.textContent = '今日已用 ' + aiCfFmt(s.used) + ' / ' + aiCfFmt(s.limit) + ' Neurons，剩余 ' + aiCfFmt(s.left) + '（UTC 00:00 重置）';
+  const hint = $('#aiCfQuotaHint');
+  if(hint){
+    hint.style.display = '';
+    hint.textContent = 'CF 额度 剩余 ' + aiCfFmt(s.left) + ' / ' + aiCfFmt(s.limit);
+    hint.title = '今日已用 ' + aiCfFmt(s.used) + ' Neurons，UTC 00:00 重置；点击刷新';
+  }
+  const top = $('#aiCfQuotaTop');
+  if(top){
+    top.style.display = '';
+    top.textContent = '『Cloudflare Workers AI』今日剩余 ' + aiCfFmt(s.left) + ' / ' + aiCfFmt(s.limit) + ' Neurons（UTC 00:00 重置，点击刷新）';
+    top.title = '今日已用 ' + aiCfFmt(s.used) + ' Neurons；点击刷新';
+  }
+  const g = document.querySelector('#aiChatModel optgroup[data-cfgroup]');
+  if(g) g.label = aiCfGroupLabel();
+}
+// 额度查询失败时，把错误提示到各处（不改动已拿到的剩余额度）
+function aiCfQuotaError(err){
+  const box = $('#aiCfQuotaBox'); if(box) box.textContent = err;
+  const hint = $('#aiCfQuotaHint');
+  if(hint){ hint.style.display = ''; hint.textContent = 'CF 额度：' + err; hint.title = err; }
+  const top = $('#aiCfQuotaTop');
+  if(top){ top.style.display = ''; top.textContent = '『Cloudflare Workers AI』额度：' + err; top.title = err; }
 }
 // 勾选 / 取消勾选某个 Cloudflare 模型
 function aiCfToggleModel(name, on){
@@ -1123,23 +1165,16 @@ async function aiCfLoadModels(){
 }
 // 查询今日 Neurons 额度（免费 10000/天，UTC 00:00 重置）
 async function aiCfQuota(notify){
-  const out = $('#aiCfQuotaBox'), hint = $('#aiCfQuotaHint');
   try{
     const r = await api('/admin/api/ai/cf/quota');
     if(r.ok && r.data && r.data.ok){
       const d = r.data;
       const used = Number(d.used) || 0, limit = Number(d.limit) || 10000, left = Number(d.remaining) || 0;
-      if(out) out.textContent = '今日已用 ' + used + ' / ' + limit + ' Neurons，剩余 ' + left + '（UTC 00:00 重置）';
-      if(hint){
-        hint.style.display = '';
-        hint.textContent = 'CF 额度 剩余 ' + left + ' / ' + limit;
-        hint.title = '今日已用 ' + used + ' Neurons，UTC 00:00 重置；点击刷新';
-      }
-      if(notify) toast('今日已用 ' + used + ' Neurons，剩余 ' + left);
+      aiCfApplyQuota(used, limit, left);
+      if(notify) toast('今日已用 ' + aiCfFmt(used) + ' Neurons，剩余 ' + aiCfFmt(left));
     } else {
       const err = (r.data && r.data.error) || '获取额度失败';
-      if(out) out.textContent = err;
-      if(hint){ hint.style.display = ''; hint.textContent = 'CF 额度：' + err; hint.title = err; }
+      aiCfQuotaError(err);
       if(notify) toast(err, true);
     }
   }catch(e){}
@@ -1353,7 +1388,7 @@ async function loadAiChat(){
       if(sel.dataset.sig !== sig){
         sel.dataset.sig = sig;
         let h = '';
-        if(cfList.length) h += '<optgroup label="Cloudflare Workers AI">' + cfList.map(m => '<option value="' + esc(m) + '">' + esc(m) + '</option>').join('') + '</optgroup>';
+        if(cfList.length) h += '<optgroup label="' + esc(aiCfGroupLabel()) + '" data-cfgroup="1">' + cfList.map(m => '<option value="' + esc(m) + '">' + esc(m) + '</option>').join('') + '</optgroup>';
         if(list.length) h += '<optgroup label="自定义配置">' + list.map(m => '<option value="' + esc(m) + '">' + esc(m) + '</option>').join('') + '</optgroup>';
         sel.innerHTML = h || '<option value="">（未配置模型）</option>';
       }
@@ -1365,7 +1400,7 @@ async function loadAiChat(){
         ? saved
         : (d.model && allList.indexOf(d.model) >= 0 ? d.model : (allList[0] || ''));
       sel.value = want;
-      if(d.cfEnabled) aiCfQuota(false);
+      if(d.cfEnabled || d.cfFromEnv) aiCfQuota(false);
     }
     aiUpdateHint();
   }catch(e){}
@@ -4987,6 +5022,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
         <label class="wk-label" style="display:flex;align-items:center;gap:6px;margin-top:0;cursor:pointer;font-weight:600">
           <input type="checkbox" id="aiCfEnabled" style="width:auto" onchange="aiCfToggle(this.checked)"> 启用 Cloudflare Workers AI（需令牌具备 Workers AI 权限）
         </label>
+        <div class="wk-label" id="aiCfQuotaTop" onclick="aiCfQuota(true)" style="display:none;margin:6px 0 0;cursor:pointer"></div>
         <div id="aiCfBox" style="display:none;border:1px solid var(--border);border-radius:3px;padding:10px;margin:8px 0 4px">
           <div class="filters" style="margin:0;align-items:flex-start">
             <div style="flex:1;min-width:200px">
