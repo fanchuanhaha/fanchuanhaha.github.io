@@ -1352,9 +1352,11 @@ app.get("/admin/api/ai/cf/quota", async (c) => {
     if (!token) return json({ ok: false, error: "请先填写 Cloudflare API 令牌" }, 400);
     // Neurons 按 UTC 自然日统计
     const day = new Date().toISOString().slice(0, 10);
+    // 字段名以 GraphQL schema 为准：AccountAiInferenceAdaptiveGroupsSum.totalNeurons
+    // （旧文档/示例里的 neurons 字段不存在，会返回 unknown field "neurons"）
     const query =
       "query($acc:String!,$d:Date!){viewer{accounts(filter:{accountTag:$acc}){" +
-      "aiInferenceAdaptiveGroups(limit:1,filter:{date_geq:$d,date_leq:$d}){sum{neurons}}}}}";
+      "aiInferenceAdaptiveGroups(limit:1,filter:{date_geq:$d,date_leq:$d}){sum{totalNeurons}}}}}";
     const resp = await fetch("https://api.cloudflare.com/client/v4/graphql", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -1369,7 +1371,7 @@ app.get("/admin/api/ai/cf/quota", async (c) => {
     }
     const groups = data?.data?.viewer?.accounts?.[0]?.aiInferenceAdaptiveGroups || [];
     let used = 0;
-    for (const g of groups) used += Number(g?.sum?.neurons) || 0;
+    for (const g of groups) used += Number(g?.sum?.totalNeurons) || 0;
     const limit = CF_FREE_NEURONS;
     return json({
       ok: true,
