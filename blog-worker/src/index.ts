@@ -1111,7 +1111,11 @@ app.get("/admin/api/ai/settings", async (c) => {
   try {
     const cfg = await getAiConfig((c.env as Bindings).DB);
     const env = c.env as Bindings;
-    const cfFromEnv = !!(String(env.CF_ACCOUNT_ID || "").trim() && String(env.CF_API_TOKEN || "").trim());
+    const envHasCfCreds = !!(
+      String(env.CF_ACCOUNT_ID || "").trim() &&
+      String(env.CF_AI_TOKEN || env.CF_API_TOKEN || "").trim()
+    );
+    const cfFromEnv = envHasCfCreds;
     return json({
       ok: true,
       ...cfg,
@@ -1165,8 +1169,8 @@ app.put("/admin/api/ai/settings", async (c) => {
       apiKey: "",
       hasKey: !!next.apiKey,
       cfApiKey: "",
-      hasCfKey: !!next.cfApiKey || !!(String((c.env as Bindings).CF_API_TOKEN || "").trim()),
-      cfFromEnv: !!(String((c.env as Bindings).CF_ACCOUNT_ID || "").trim() && String((c.env as Bindings).CF_API_TOKEN || "").trim()),
+      hasCfKey: !!next.cfApiKey || !!(String((c.env as Bindings).CF_AI_TOKEN || (c.env as Bindings).CF_API_TOKEN || "").trim()),
+      cfFromEnv: !!(String((c.env as Bindings).CF_ACCOUNT_ID || "").trim() && String((c.env as Bindings).CF_AI_TOKEN || (c.env as Bindings).CF_API_TOKEN || "").trim()),
     });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
