@@ -176,6 +176,12 @@ a{color:var(--accent);text-decoration:none}
 .wk-tag.off{color:var(--muted)}
 /* 访问趋势折线图 */
 #visitChart{position:relative}
+/* 图表下方：区间总量 + 各站点拆分 */
+.vb-box{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:12px}
+.vb-total{color:var(--fg);font-weight:600}
+.vb-total b{color:var(--accent);font-size:15px;margin:0 2px}
+.vb-chip{border:1px solid var(--border);border-radius:3px;padding:2px 8px;color:var(--muted);background:var(--input-bg)}
+.vb-chip b{color:var(--fg)}
 .chart-svg{max-width:100%}
 .chart-svg .cl-grid{stroke:var(--border);stroke-width:1}
 .chart-svg .cl-ytxt{fill:var(--muted);font-size:11px}
@@ -731,28 +737,47 @@ async function loadVisit(){
       if(total) total.textContent = (d.total == null ? '-' : d.total);
     }
   }catch(e){}
-  const chart = $('#visitChart'), sumEl = $('#visitRangeSum');
+  const chart = $('#visitChart'), bd = $('#visitBreakdown');
   if(chart) chart.innerHTML = '<div class="empty">加载中...</div>';
+  if(bd) bd.innerHTML = '<span class="vb-chip">加载中...</span>';
   const scope = $('#visitChartScope');
   if(scope) scope.textContent = visitSite ? ' · ' + visitSite : ' · 全部站点';
   try{
     const r = await api('/admin/api/visit/daily?days=' + visitDays + (visitSite ? '&site=' + encodeURIComponent(visitSite) : ''));
     if(r.ok && r.data){
       renderVisitChart(r.data.series || []);
-      if(sumEl) sumEl.textContent = (r.data.sum == null ? '-' : r.data.sum);
     } else {
       if(chart) chart.innerHTML = '<div class="empty">加载失败</div>';
-      if(sumEl) sumEl.textContent = '-';
     }
   }catch(e){
     if(chart) chart.innerHTML = '<div class="empty">加载失败</div>';
-    if(sumEl) sumEl.textContent = '-';
   }
   const ld = $('#visitDaysLabel');
   if(ld) ld.textContent = visitDays;
   const sld = $('#visitSiteDaysLabel');
   if(sld) sld.textContent = visitDays;
   loadVisitSites();
+}
+
+// 图表下方汇总：区间总访问量 + 各站点拆分（选中站点时只显示该站点）
+function renderVisitBreakdown(d){
+  const box = $('#visitBreakdown');
+  if(!box) return;
+  const sites = d.sites || [];
+  let h = '';
+  if(visitSite){
+    const s = sites.find(x => x.site === visitSite);
+    h += '<span class="vb-total">近 ' + visitDays + ' 天 · ' + esc(visitSite) + '：<b>' + (s ? (Number(s.range)||0) : 0) + '</b> 次</span>';
+    if(s) h += '<span class="vb-chip">累计 <b>' + (Number(s.total)||0) + '</b> 次</span>';
+  }else{
+    h += '<span class="vb-total">近 ' + visitDays + ' 天总访问量：<b>' + (Number(d.rangeTotal)||0) + '</b> 次</span>';
+    sites.forEach(s => {
+      h += '<span class="vb-chip">' + esc(s.site) + ' <b>' + (Number(s.range)||0) + '</b> 次</span>';
+    });
+    if(Number(d.legacy) > 0) h += '<span class="vb-chip">未区分站点 <b>' + (Number(d.legacy)||0) + '</b> 次</span>';
+    if(!sites.length) h += '<span class="vb-chip">暂无站点数据</span>';
+  }
+  box.innerHTML = h;
 }
 
 // 来源站点明细：站点 / 今日 / 区间 / 累计 / 占比
@@ -764,6 +789,7 @@ async function loadVisitSites(){
     const r = await api('/admin/api/visit/sites?days=' + visitDays);
     if(!r.ok || !r.data){ box.innerHTML = '<div class="empty">加载失败</div>'; return; }
     const d = r.data, sites = d.sites || [];
+    renderVisitBreakdown(d);
     if(!sites.length && !d.legacy){
       box.innerHTML = '<div class="empty">暂无数据</div>';
       return;
@@ -4483,7 +4509,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
         <button class="wk-btn sm" onclick="applyVisitDays()">应用</button>
       </div>
       <div id="visitChart"><div class="empty">加载中...</div></div>
-      <p class="wk-label" style="margin:8px 0 0">图中区间合计：<b id="visitRangeSum">-</b></p>
+      <div id="visitBreakdown" class="vb-box"><span class="vb-chip">加载中...</span></div>
     </div>
 
     <div class="wk-card">
