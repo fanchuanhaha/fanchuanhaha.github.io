@@ -191,7 +191,7 @@ a{color:var(--accent);text-decoration:none}
 .chart-svg .cl-dot{fill:var(--accent)}
 .chart-svg .cl-cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;pointer-events:none}
 .chart-svg .cl-mark{fill:var(--card);stroke:var(--accent);stroke-width:2;pointer-events:none}
-.chart-tip{position:absolute;transform:translate(-50%,0);background:var(--nav);color:var(--nav-active);font-size:12px;line-height:1.4;padding:4px 8px;border-radius:3px;white-space:nowrap;pointer-events:none;z-index:5}
+.chart-tip{position:absolute;transform:translate(-50%,0);background:var(--nav);color:var(--nav-active);font-size:12px;line-height:1.5;padding:4px 8px;border-radius:3px;white-space:nowrap;pointer-events:none;z-index:5;text-align:left}
 @media(max-width:640px){.chart-svg .cl-ytxt,.chart-svg .cl-xtxt{font-size:15px}}
 /* 顶部标签栏：移动端横向滑动 */
 .wk-tabs{display:flex;gap:0;max-width:1080px;margin:14px auto 0;padding:0 16px;border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -650,11 +650,20 @@ let visitDays = 30;
 // 折线图当前查看的站点（空 = 全部站点）
 let visitSite = '';
 
-// 折线图：用内联 SVG 绘制最近 N 天访问量
-function renderVisitChart(series){
+// 折线图：用内联 SVG 绘制最近 N 天访问量；siteSeries 用于悬停时显示各站点拆分
+function renderVisitChart(series, siteSeries){
   const el = $('#visitChart');
   if(!el) return;
   if(!series || !series.length){ el.innerHTML = '<div class="empty">暂无数据</div>'; return; }
+  // day → [{site,count}]（只保留有访问的站点）
+  const byDay = {};
+  (siteSeries || []).forEach(function(s){
+    (s.series || []).forEach(function(pt){
+      const c = Number(pt && pt.count) || 0;
+      if(!pt || !c) return;
+      (byDay[pt.day] = byDay[pt.day] || []).push({ site: s.site, count: c });
+    });
+  });
   const W = 800, H = 260, padL = 46, padR = 16, padT = 16, padB = 30;
   const iw = W - padL - padR, ih = H - padT - padB;
   const n = series.length;
@@ -687,6 +696,7 @@ function renderVisitChart(series){
   const svg = el.querySelector('svg');
   el.__geo = {
     W:W, H:H, padL:padL, padT:padT, iw:iw, ih:ih, n:n, series:series, X:X, Y:Y,
+    bySite: byDay,
     cross: svg.querySelector('.cl-cross'),
     mark: svg.querySelector('.cl-mark'),
     tip: el.querySelector('.chart-tip')
@@ -708,7 +718,13 @@ function renderVisitChart(series){
     g.mark.setAttribute('cx', cx.toFixed(1));
     g.mark.setAttribute('cy', cy.toFixed(1));
     g.mark.style.opacity = '1';
-    g.tip.textContent = String(p.day || '') + '：' + (Number(p.count) || 0) + ' 次';
+    // 悬停提示：日期 + 全部站点次数；全部站点视图下再列出各站点当天的次数
+    let html = '<b>' + esc(String(p.day || '')) + '</b>　' + esc(visitSite || '全部站点') + '：' + (Number(p.count) || 0) + ' 次';
+    if(!visitSite && g.bySite){
+      const rows = (g.bySite[p.day] || []).slice().sort(function(a, b){ return b.count - a.count; });
+      rows.forEach(function(r){ html += '<br>' + esc(r.site) + '：' + r.count + ' 次'; });
+    }
+    g.tip.innerHTML = html;
     g.tip.classList.remove('hidden');
     const tx = Math.max(34, Math.min(rect.width - 34, (cx / g.W) * rect.width));
     const ty = Math.max(0, (cy / g.H) * rect.height - 36);
@@ -745,7 +761,7 @@ async function loadVisit(){
   try{
     const r = await api('/admin/api/visit/daily?days=' + visitDays + (visitSite ? '&site=' + encodeURIComponent(visitSite) : ''));
     if(r.ok && r.data){
-      renderVisitChart(r.data.series || []);
+      renderVisitChart(r.data.series || [], r.data.siteSeries || []);
     } else {
       if(chart) chart.innerHTML = '<div class="empty">加载失败</div>';
     }
@@ -935,6 +951,9 @@ async function changeAdminAccount(){
 // ---------- AI 设置（OpenAI 兼容接口：配置 / 测试 / 模型列表 / 前端代理）----------
 let aiModels = [];   // 拉取到的全部模型
 let aiPicked = [];   // 已选入的模型（保存后可被 AI 助手切换）
+let aiCfModels = [];     // Cloudflare 可用模型（获取到或已保存的）
+let aiCfPicked = [];     // 勾选启用的 Cloudflare 模型
+let aiCfEnabledCfg = false; // 是否启用 Cloudflare Workers AI（聊天页用于显示额度）
 const aiVal = id => { const el=$('#'+id); return el ? el.value : ''; };
 // 拼接 OpenAI 兼容地址：结尾无 /vN 时自动补 /v1（与后端 aiEndpoint 逻辑一致）
 function aiJoin(base, path){
@@ -977,6 +996,14 @@ async function loadAiSettings(){
       const pr = $('#aiPrompt'); if(pr) pr.value = d.prompt || d.defaultPrompt || '';
       const k = $('#aiApiKey');
       if(k){ k.value = ''; k.placeholder = d.hasKey ? '已保存（留空表示不修改）' : '未设置'; }
+      // Cloudflare Workers AI
+      aiCfEnabledCfg = !!d.cfEnabled;
+      const ce = $('#aiCfEnabled'); if(ce) ce.checked = aiCfEnabledCfg;
+      const ca = $('#aiCfAccountId'); if(ca) ca.value = d.cfAccountId || '';
+      const ck = $('#aiCfApiKey'); if(ck){ ck.value = ''; ck.placeholder = d.hasCfKey ? '已保存（留空表示不修改）' : '未设置'; }
+      aiCfPicked = Array.isArray(d.cfModels) ? d.cfModels.slice() : [];
+      if(!aiCfModels.length) aiCfModels = aiCfPicked.slice();
+      aiCfToggle(aiCfEnabledCfg);
     }
   }catch(e){}
 }
@@ -1005,6 +1032,109 @@ async function saveAiSettings(){
     toast(err, true);
     if(msg){ msg.className='msg err'; msg.textContent=err; }
   }
+}
+// ---------- Cloudflare Workers AI（模型勾选 / 额度）----------
+function aiCfToggle(on){
+  const box = $('#aiCfBox'); if(box) box.style.display = on ? '' : 'none';
+  if(on){ aiCfRenderModels(); aiCfQuota(false); }
+}
+// 勾选 / 取消勾选某个 Cloudflare 模型
+function aiCfToggleModel(name, on){
+  const i = aiCfPicked.indexOf(name);
+  if(on && i < 0) aiCfPicked.push(name);
+  if(!on && i >= 0) aiCfPicked.splice(i, 1);
+  aiCfRenderModels();
+}
+function aiCfPickAll(){
+  const q = String(aiVal('aiCfModelSearch') || '').trim().toLowerCase();
+  const list = q ? aiCfModels.filter(m => m.toLowerCase().indexOf(q) >= 0) : aiCfModels;
+  list.forEach(m => { if(aiCfPicked.indexOf(m) < 0) aiCfPicked.push(m); });
+  aiCfRenderModels();
+}
+function aiCfPickNone(){ aiCfPicked = []; aiCfRenderModels(); }
+function aiCfRenderModels(){
+  const box = $('#aiCfModelList'); if(!box) return;
+  const q = String(aiVal('aiCfModelSearch') || '').trim().toLowerCase();
+  const list = q ? aiCfModels.filter(m => String(m).toLowerCase().indexOf(q) >= 0) : aiCfModels;
+  if(!list.length){
+    box.innerHTML = '<span class="wk-label" style="margin:0">' +
+      (aiCfModels.length ? '没有匹配「' + esc(q) + '」的模型' : '尚未获取模型：保存配置后点「获取模型列表」') + '</span>';
+    return;
+  }
+  box.innerHTML = list.map(function(m){
+    const on = aiCfPicked.indexOf(m) >= 0;
+    return '<label class="wk-label" style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;font-size:12px;padding:3px 8px;border:1px solid ' +
+      (on ? 'var(--accent)' : 'var(--border)') + ';border-radius:3px;white-space:nowrap">' +
+      '<input type="checkbox" style="width:auto" ' + (on ? 'checked' : '') +
+      ' onchange="aiCfToggleModel(this.dataset.m,this.checked)" data-m="' + esc(m) + '">' +
+      '<span>' + esc(m) + '</span></label>';
+  }).join('');
+}
+// 保存 Cloudflare 配置（勾选的模型一并保存）
+async function aiCfSave(){
+  const msg = $('#aiCfMsg');
+  const payload = {
+    cfEnabled: !!($('#aiCfEnabled') || {}).checked,
+    cfAccountId: aiVal('aiCfAccountId').trim(),
+    cfApiKey: aiVal('aiCfApiKey'),
+    cfModels: aiCfPicked.slice(),
+  };
+  if(msg){ msg.className = 'msg'; msg.textContent = '保存中...'; }
+  const r = await api('/admin/api/ai/settings', { method:'PUT', body: JSON.stringify(payload) });
+  if(r.ok){
+    toast('Cloudflare AI 配置已保存');
+    if(msg){ msg.className='msg ok'; msg.textContent='Cloudflare AI 配置已保存'; }
+    const k = $('#aiCfApiKey'); if(k) k.value = '';
+    await loadAiSettings();
+  } else {
+    const err = (r.data && r.data.error) || '保存失败';
+    if(msg){ msg.className='msg err'; msg.textContent = err; }
+    toast(err, true);
+  }
+}
+// 拉取 Cloudflare 模型列表（先用已保存的 Account ID / 令牌）
+async function aiCfLoadModels(){
+  const msg = $('#aiCfMsg');
+  if(msg){ msg.className='msg'; msg.textContent='获取中...'; }
+  try{
+    const r = await api('/admin/api/ai/cf/models');
+    if(r.ok && r.data && r.data.ok){
+      aiCfModels = Array.isArray(r.data.models) ? r.data.models : [];
+      // 已保存但本次未返回的模型保留在勾选里，避免被静默丢弃
+      aiCfRenderModels();
+      if(msg){ msg.className='msg ok'; msg.textContent='共获取到 ' + aiCfModels.length + ' 个模型，勾选后点「保存 Cloudflare 配置」'; }
+    } else {
+      const err = (r.data && r.data.error) || '获取失败';
+      if(msg){ msg.className='msg err'; msg.textContent = err; }
+      toast(err, true);
+    }
+  }catch(e){
+    if(msg){ msg.className='msg err'; msg.textContent='获取失败'; }
+    toast('获取失败', true);
+  }
+}
+// 查询今日 Neurons 额度（免费 10000/天，UTC 00:00 重置）
+async function aiCfQuota(notify){
+  const out = $('#aiCfQuotaBox'), hint = $('#aiCfQuotaHint');
+  try{
+    const r = await api('/admin/api/ai/cf/quota');
+    if(r.ok && r.data && r.data.ok){
+      const d = r.data;
+      const used = Number(d.used) || 0, limit = Number(d.limit) || 10000, left = Number(d.remaining) || 0;
+      if(out) out.textContent = '今日已用 ' + used + ' / ' + limit + ' Neurons，剩余 ' + left + '（UTC 00:00 重置）';
+      if(hint){
+        hint.style.display = '';
+        hint.textContent = 'CF 额度 剩余 ' + left + ' / ' + limit;
+        hint.title = '今日已用 ' + used + ' Neurons，UTC 00:00 重置；点击刷新';
+      }
+      if(notify) toast('今日已用 ' + used + ' Neurons，剩余 ' + left);
+    } else {
+      const err = (r.data && r.data.error) || '获取额度失败';
+      if(out) out.textContent = err;
+      if(hint){ hint.style.display = ''; hint.textContent = 'CF 额度：' + err; hint.title = err; }
+      if(notify) toast(err, true);
+    }
+  }catch(e){}
 }
 // 测试连通性：只用第一个已选模型发一个最小请求
 async function testAiSettings(){
@@ -1208,21 +1338,26 @@ async function loadAiChat(){
     const sel = $('#aiChatModel');
     if(sel){
       const list = (Array.isArray(d.models) && d.models.length) ? d.models : (d.model ? [d.model] : []);
-      const sig = list.join('|');
-      // 仅在可选模型发生变化时重建下拉
+      const cfList = (d.cfEnabled && Array.isArray(d.cfModels)) ? d.cfModels : [];
+      aiCfEnabledCfg = !!d.cfEnabled;
+      const sig = JSON.stringify([list, cfList]);
+      // 仅在可选模型发生变化时重建下拉（分成 Cloudflare / 自定义两栏）
       if(sel.dataset.sig !== sig){
         sel.dataset.sig = sig;
-        sel.innerHTML = list.length
-          ? list.map(m => '<option value="' + esc(m) + '">' + esc(m) + '</option>').join('')
-          : '<option value="">（未配置模型）</option>';
+        let h = '';
+        if(cfList.length) h += '<optgroup label="Cloudflare Workers AI">' + cfList.map(m => '<option value="' + esc(m) + '">' + esc(m) + '</option>').join('') + '</optgroup>';
+        if(list.length) h += '<optgroup label="自定义配置">' + list.map(m => '<option value="' + esc(m) + '">' + esc(m) + '</option>').join('') + '</optgroup>';
+        sel.innerHTML = h || '<option value="">（未配置模型）</option>';
       }
+      const allList = cfList.concat(list);
       // 记住用户在该聊天页选择的模型：优先恢复上次选择，否则用默认（第一个已选模型）
       let saved = '';
       try{ saved = localStorage.getItem('aiChatModel') || ''; }catch(e){}
-      const want = (saved && list.indexOf(saved) >= 0)
+      const want = (saved && allList.indexOf(saved) >= 0)
         ? saved
-        : (d.model && list.indexOf(d.model) >= 0 ? d.model : (list[0] || ''));
+        : (d.model && allList.indexOf(d.model) >= 0 ? d.model : (allList[0] || ''));
       sel.value = want;
+      if(d.cfEnabled) aiCfQuota(false);
     }
     aiUpdateHint();
   }catch(e){}
@@ -1264,6 +1399,8 @@ function aiInitSide(){
 // 顶栏提示：仅在未配置 AI 时给出引导（权限在输入框下方选择）
 async function aiUpdateHint(){
   const hint = $('#aiChatHint'); if(!hint) return;
+  // 已启用 Cloudflare Workers AI 时，即使没有自定义接口地址也不算未配置
+  if(aiCfEnabledCfg){ hint.textContent = ''; return; }
   const base = await resolveAiBase();
   hint.textContent = base ? '' : '尚未配置 AI，请到「设置 → AI 设置」填写';
 }
@@ -2127,6 +2264,8 @@ async function aiAgentLoop(){
   }
   await aiSaveConversation();
   scrollAiBottom();
+  // 用 Cloudflare 模型时刷新一次剩余额度（Neurons 每日 10000）
+  if(aiCfEnabledCfg){ try{ aiCfQuota(false); }catch(e){} }
 }
 // 标记本回合被中断（手动停止/请求失败）：给回合内最后一条 assistant 消息打标，渲染成「已中断」
 function aiMarkInterrupted(turnStart){
@@ -2171,6 +2310,9 @@ async function aiStreamRound(modelName, ui, noTools){
   const reqMessages = sysParts.length ? [{ role:'system', content: sysParts.join('\\n\\n') }].concat(hist) : hist;
   // stream_options.include_usage：让上游在流末尾附带 usage（token 用量/缓存命中）
   const payload = { messages: reqMessages, model: modelName, stream_options: { include_usage: true } };
+  // Cloudflare Workers AI：模型以 @cf/ 开头，交给后端走 Cloudflare 的兼容接口
+  const isCfModel = String(modelName || '').indexOf('@cf/') === 0;
+  if(isCfModel){ payload.provider = 'cf'; delete payload.stream_options; }
   // 思考强度：作为 reasoning_effort 一并发给服务商（关闭时不发送）
   if(aiThink) payload.reasoning_effort = aiThinkLevel;
   // 收尾轮不带工具，让模型直接输出文字总结
@@ -2178,7 +2320,7 @@ async function aiStreamRound(modelName, ui, noTools){
   const t0 = Date.now();   // 本轮发起点：用于首字速度与平均 token 速度
   let ttft = null;         // 首个输出片段耗时（ms）
   let resp;
-  if(aiChatProxyOn()){
+  if(aiChatProxyOn() && !isCfModel){
     // 前端代理：浏览器直连服务商（仅当服务商允许跨域 CORS 时可用）
     const base = await resolveAiBase();
     if(!base) throw new Error('前端代理需要 API 地址，请先在「设置 → AI 设置」填写 API 地址');
@@ -4679,6 +4821,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
         <div class="ai-foot">
           <span class="wk-label" style="margin:0">模型</span>
           <select class="wk-input" id="aiChatModel" onchange="aiSetChatModel(this.value)" style="width:auto;flex:1 1 140px;min-width:80px;max-width:320px;padding:4px 8px"></select>
+          <span class="wk-label" id="aiCfQuotaHint" onclick="aiCfQuota(true)" title="点击刷新" style="display:none;margin:0;cursor:pointer;white-space:nowrap"></span>
           <span class="wk-label" style="margin:0">权限</span>
           <select class="wk-input" id="aiChatPermission" onchange="aiSetPermission(this.value)" title="权限：安全模式=仅对话；重要确认=危险操作确认；全部确认=每步确认；完全允许=无需确认" style="width:auto;flex:0 0 auto;min-width:0;padding:4px 8px">
             <option value="safe" title="安全模式 · 仅对话，不执行任何操作">安全模式</option>
@@ -4833,7 +4976,36 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
     <details class="wk-collapse">
       <summary>AI 设置</summary>
       <div class="wk-collapse-body">
-        <p class="wk-label" style="margin-top:0">配置一个 OpenAI 兼容的 AI 接口（Chat Completions 协议）。填入基础地址与密钥后，可直接测试连通性与获取模型列表。</p>
+        <label class="wk-label" style="display:flex;align-items:center;gap:6px;margin-top:0;cursor:pointer;font-weight:600">
+          <input type="checkbox" id="aiCfEnabled" style="width:auto" onchange="aiCfToggle(this.checked)"> 启用 Cloudflare Workers AI（需令牌具备 Workers AI 权限）
+        </label>
+        <div id="aiCfBox" style="display:none;border:1px solid var(--border);border-radius:3px;padding:10px;margin:8px 0 4px">
+          <div class="filters" style="margin:0;align-items:flex-start">
+            <div style="flex:1;min-width:200px">
+              <label class="wk-label">Cloudflare Account ID</label>
+              <input class="wk-input" id="aiCfAccountId" placeholder="账户 ID（32 位十六进制）">
+            </div>
+            <div style="flex:1;min-width:200px">
+              <label class="wk-label">API 令牌（Workers AI 权限）</label>
+              <input class="wk-input" id="aiCfApiKey" type="password" placeholder="留空表示不修改">
+            </div>
+          </div>
+          <div class="filters" style="margin:10px 0 0">
+            <button class="wk-btn sm" onclick="aiCfSave()">保存 Cloudflare 配置</button>
+            <button class="wk-btn ghost sm" onclick="aiCfLoadModels()">获取模型列表</button>
+            <button class="wk-btn ghost sm" onclick="aiCfQuota(true)">查询今日额度</button>
+          </div>
+          <div class="msg" id="aiCfMsg"></div>
+          <div class="wk-label" id="aiCfQuotaBox" style="margin:6px 0 0"></div>
+          <label class="wk-label" style="margin-top:12px">启用的模型（勾选后出现在 AI 助手「模型」下拉的 Cloudflare 分组）</label>
+          <input class="wk-input" id="aiCfModelSearch" placeholder="搜索模型，如 llama / qwen / deepseek" oninput="aiCfRenderModels()">
+          <div class="filters" style="margin:8px 0 0">
+            <button class="wk-btn ghost sm" onclick="aiCfPickAll()">全选当前</button>
+            <button class="wk-btn ghost sm" onclick="aiCfPickNone()">清空</button>
+          </div>
+          <div id="aiCfModelList" class="ai-model-list" style="margin-top:8px"></div>
+        </div>
+        <p class="wk-label" style="margin-top:14px">配置一个 OpenAI 兼容的 AI 接口（Chat Completions 协议）。填入基础地址与密钥后，可直接测试连通性与获取模型列表。</p>
         <label class="wk-label">API 地址（基础地址，带或不带结尾的 /v1 均可）</label>
         <input class="wk-input" id="aiBaseUrl" placeholder="https://api.openai.com/v1">
         <label class="wk-label" style="margin-top:12px">API 密钥</label>
@@ -4931,7 +5103,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
           <li>
             <div>
               <div class="name"><span class="chip">GET</span> /admin/api/visit/daily?days=30&amp;site=1.com</div>
-              <div class="meta">按天趋势（需管理员登录）。days 取值 1-3650；可选 site 只看某个站点。返回 {ok, days, site, sum, series:[{day,count}]}</div>
+              <div class="meta">按天趋势（需管理员登录）。days 取值 1-3650；可选 site 只看某个站点。返回 {ok, days, site, sum, series:[{day,count}]}；全部站点视图额外返回 siteSeries:[{site,series:[{day,count}]}]（折线图悬停显示站点拆分）</div>
             </div>
           </li>
           <li>

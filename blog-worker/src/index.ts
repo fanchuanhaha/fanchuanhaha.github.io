@@ -554,6 +554,42 @@ async function visitDaily(db: D1Database, days: number, site = "") {
   return series;
 }
 
+// 最近 days 天各站点的逐日访问量（用于折线图悬停时显示站点拆分）
+async function visitDailyBySite(db: D1Database, days: number) {
+  await ensureVisitTables(db);
+  const from = visitDay(days - 1);
+  const rows = await db
+    .prepare(
+      `SELECT "day","site","count" FROM "wl_VisitSite" WHERE "day">=?1 ORDER BY "day" ASC`
+    )
+    .bind(from)
+    .all<{ day: string; site: string; count: number }>();
+  const bySite = new Map<string, Map<string, number>>();
+  (rows.results || []).forEach((r) => {
+    if (!r.site) return;
+    let m = bySite.get(r.site);
+    if (!m) {
+      m = new Map<string, number>();
+      bySite.set(r.site, m);
+    }
+    m.set(r.day, (m.get(r.day) || 0) + (Number(r.count) || 0));
+  });
+  const out: { site: string; series: { day: string; count: number }[] }[] = [];
+  bySite.forEach((m, s) => {
+    const series: { day: string; count: number }[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = visitDay(i);
+      series.push({ day: d, count: m.get(d) ?? 0 });
+    }
+    out.push({ site: s, series });
+  });
+  out.sort(
+    (a, b) =>
+      b.series.reduce((x, y) => x + y.count, 0) - a.series.reduce((x, y) => x + y.count, 0)
+  );
+  return out;
+}
+
 // 过期数据清理：同一隔离实例每天最多执行一次
 let lastCleanupDay = "";
 async function visitCleanup(db: D1Database) {
@@ -850,11 +886,14 @@ app.get("/admin/api/visit/daily", async (c) => {
   const site = normalizeSite(c.req.query("site") || "");
   try {
     const series = await visitDaily((c.env as Bindings).DB, days, site);
+    // 全部站点视图：附带各站点逐日数据，供折线图悬停时显示站点拆分
+    const siteSeries = site ? [] : await visitDailyBySite((c.env as Bindings).DB, days);
     return json({
       ok: true,
       days,
       site,
       series,
+      siteSeries,
       sum: series.reduce((a, b) => a + b.count, 0),
     });
   } catch (e) {
@@ -1000,6 +1039,11 @@ interface AiConfig {
   enabled: boolean; // 是否启用
   clientProxy: boolean; // 前端代理：由浏览器直连服务商
   permission: string; // 权限级别：safe 安全访问 / important 重要确认 / all 全部确认 / full 完全访问
+  // Cloudflare Workers AI（与上面的自定义接口相互独立，模型以 @cf/ 开头）
+  cfEnabled: boolean; // 是否启用 Cloudflare Workers AI
+  cfAccountId: string; // Cloudflare 账户 ID
+  cfApiKey: string; // Cloudflare API 令牌（需 Workers AI 权限，读取接口不回传明文）
+  cfModels: string[]; // 勾选启用的 Cloudflare 模型
 }
 
 const AI_DEFAULT_CONFIG: AiConfig = {
@@ -1011,6 +1055,10 @@ const AI_DEFAULT_CONFIG: AiConfig = {
   enabled: false,
   clientProxy: false,
   permission: "safe",
+  cfEnabled: false,
+  cfAccountId: "",
+  cfApiKey: "",
+  cfModels: [],
 };
 
 // 权限级别白名单：非法值回退为 safe（安全访问）
@@ -1057,7 +1105,15 @@ app.get("/admin/api/ai/settings", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
   try {
     const cfg = await getAiConfig((c.env as Bindings).DB);
-    return json({ ok: true, ...cfg, apiKey: "", hasKey: !!cfg.apiKey, defaultPrompt: AI_DEFAULT_PROMPT });
+    return json({
+      ok: true,
+      ...cfg,
+      apiKey: "",
+      hasKey: !!cfg.apiKey,
+      cfApiKey: "",
+      hasCfKey: !!cfg.cfApiKey,
+      defaultPrompt: AI_DEFAULT_PROMPT,
+    });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
   }
@@ -1082,9 +1138,18 @@ app.put("/admin/api/ai/settings", async (c) => {
       enabled: body.enabled === undefined ? cur.enabled : !!body.enabled,
       clientProxy: body.clientProxy === undefined ? cur.clientProxy : !!body.clientProxy,
       permission: body.permission === undefined ? cur.permission : normalizePermission(body.permission),
+      cfEnabled: body.cfEnabled === undefined ? cur.cfEnabled : !!body.cfEnabled,
+      cfAccountId: body.cfAccountId === undefined ? cur.cfAccountId : String(body.cfAccountId).trim(),
+      cfApiKey:
+        body.cfApiKey === undefined || body.cfApiKey === ""
+          ? cur.cfApiKey
+          : String(body.cfApiKey),
+      cfModels: Array.isArray(body.cfModels)
+        ? body.cfModels.map((m) => String(m)).filter(Boolean)
+        : cur.cfModels,
     };
     await saveAiConfig(db, next);
-    return json({ ok: true, ...next, apiKey: "", hasKey: !!next.apiKey });
+    return json({ ok: true, ...next, apiKey: "", hasKey: !!next.apiKey, cfApiKey: "", hasCfKey: !!next.cfApiKey });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
   }
@@ -1202,6 +1267,93 @@ app.post("/admin/api/ai/models", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
   const body = (await c.req.json().catch(() => ({}))) as { baseUrl?: string; apiKey?: string };
   return aiModelsHandler(c, { baseUrl: body.baseUrl, apiKey: body.apiKey });
+});
+
+// ---------- 3.585 Cloudflare Workers AI ----------
+// 使用 Cloudflare 的 OpenAI 兼容接口：/accounts/{id}/ai/v1/chat/completions
+// 令牌需具备 Workers AI 权限；额度（Neurons）通过 GraphQL Analytics 查询。
+const CF_FREE_NEURONS = 10000; // 免费额度：每天 10000 Neurons（UTC 00:00 重置）
+
+function cfBaseUrl(cfg: AiConfig): string {
+  return `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(cfg.cfAccountId)}/ai/v1`;
+}
+
+// GET 模型列表：/ai/models/search?task=Text Generation
+app.get("/admin/api/ai/cf/models", async (c) => {
+  if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
+  const db = (c.env as Bindings).DB;
+  try {
+    const cfg = await getAiConfig(db);
+    const accountId = String(c.req.query("accountId") || cfg.cfAccountId || "").trim();
+    const token = String(c.req.query("apiKey") || cfg.cfApiKey || "").trim();
+    if (!accountId) return json({ ok: false, error: "请先填写 Cloudflare Account ID" }, 400);
+    if (!token) return json({ ok: false, error: "请先填写 Cloudflare API 令牌" }, 400);
+    const url =
+      `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}` +
+      `/ai/models/search?per_page=100&task=Text%20Generation`;
+    const resp = await fetch(url, {
+      headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+    });
+    const text = await resp.text();
+    let data: any = null;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {}
+    if (!resp.ok || data?.success === false) {
+      const detail =
+        data?.errors?.[0]?.message || data?.error?.message || text.slice(0, 300) || `HTTP ${resp.status}`;
+      return json({ ok: false, status: resp.status, error: String(detail) });
+    }
+    const list: any[] = Array.isArray(data?.result) ? data.result : [];
+    const models = list
+      .map((m) => (typeof m === "string" ? m : m?.name))
+      .filter((m): m is string => typeof m === "string" && m.indexOf("@cf/") === 0);
+    return json({ ok: true, count: models.length, models: Array.from(new Set(models)).sort() });
+  } catch (e) {
+    return json({ ok: false, error: String(e) }, 500);
+  }
+});
+
+// GET 今日额度：已用 / 剩余 Neurons（GraphQL Analytics）
+app.get("/admin/api/ai/cf/quota", async (c) => {
+  if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
+  const db = (c.env as Bindings).DB;
+  try {
+    const cfg = await getAiConfig(db);
+    const accountId = String(c.req.query("accountId") || cfg.cfAccountId || "").trim();
+    const token = String(c.req.query("apiKey") || cfg.cfApiKey || "").trim();
+    if (!accountId) return json({ ok: false, error: "请先填写 Cloudflare Account ID" }, 400);
+    if (!token) return json({ ok: false, error: "请先填写 Cloudflare API 令牌" }, 400);
+    // Neurons 按 UTC 自然日统计
+    const day = new Date().toISOString().slice(0, 10);
+    const query =
+      "query($acc:String!,$d:Date!){viewer{accounts(filter:{accountTag:$acc}){" +
+      "aiInferenceAdaptiveGroups(limit:1,filter:{date_geq:$d,date_leq:$d}){sum{neurons}}}}}";
+    const resp = await fetch("https://api.cloudflare.com/client/v4/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ query, variables: { acc: accountId, d: day } }),
+    });
+    const data: any = await resp.json().catch(() => null);
+    if (!resp.ok || (Array.isArray(data?.errors) && data.errors.length)) {
+      const detail =
+        data?.errors?.[0]?.message || `HTTP ${resp.status}（令牌需要「账户分析」读取权限）`;
+      return json({ ok: false, status: resp.status, error: String(detail) });
+    }
+    const groups = data?.data?.viewer?.accounts?.[0]?.aiInferenceAdaptiveGroups || [];
+    let used = 0;
+    for (const g of groups) used += Number(g?.sum?.neurons) || 0;
+    const limit = CF_FREE_NEURONS;
+    return json({
+      ok: true,
+      day,
+      used: Math.round(used),
+      limit,
+      remaining: Math.max(0, Math.round(limit - used)),
+    });
+  } catch (e) {
+    return json({ ok: false, error: String(e) }, 500);
+  }
 });
 
 // ---------- 3.59 AI 助手（聊天：流式输出 + 历史记录）----------
@@ -1335,9 +1487,24 @@ app.post("/admin/api/ai/chat", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
   const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
   const cfg = await getAiConfig((c.env as Bindings).DB);
-  const baseUrl = String(body.baseUrl || cfg.baseUrl || "").trim();
-  const apiKey = String(body.apiKey || cfg.apiKey || "");
+  let baseUrl = String(body.baseUrl || cfg.baseUrl || "").trim();
+  let apiKey = String(body.apiKey || cfg.apiKey || "");
   const model = String(body.model || cfg.model || "").trim();
+  // Cloudflare Workers AI：模型以 @cf/ 开头或显式 provider=cf，走 Cloudflare 的 OpenAI 兼容接口
+  const isCf = String(body.provider || "") === "cf" || model.indexOf("@cf/") === 0;
+  if (isCf) {
+    if (!cfg.cfEnabled || !cfg.cfAccountId || !cfg.cfApiKey) {
+      return json(
+        {
+          ok: false,
+          error: "请先在「设置 → AI 设置」启用 Cloudflare Workers AI，并填写 Account ID 与 API 令牌",
+        },
+        400
+      );
+    }
+    baseUrl = cfBaseUrl(cfg);
+    apiKey = cfg.cfApiKey;
+  }
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const prompt =
     body.prompt === undefined
@@ -1369,9 +1536,10 @@ app.post("/admin/api/ai/chat", async (c) => {
         messages: msgs,
         stream: true,
         // 让上游在流末尾附带 usage（token 用量 / 缓存命中），供前端展示
-        stream_options: { include_usage: true },
+        // Cloudflare 的兼容接口不支持这两个扩展字段，跳过避免 400
+        ...(isCf ? {} : { stream_options: { include_usage: true } }),
         ...(tools && tools.length ? { tools, tool_choice: "auto" } : {}),
-        ...(reasoningEffort ? { reasoning_effort: reasoningEffort } : {}),
+        ...(reasoningEffort && !isCf ? { reasoning_effort: reasoningEffort } : {}),
       }),
     });
     if (!upstream.ok || !upstream.body) {
