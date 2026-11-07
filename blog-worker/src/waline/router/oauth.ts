@@ -200,10 +200,19 @@ oauthRoutes.get("/", async (c) => {
 	}
 });
 
-/** 在跳转地址后追加参数（兼容带查询串 / 绝对 URL 的回跳地址） */
+/** 在跳转地址后追加参数（兼容带查询串 / hash / 绝对 URL 的回跳地址） */
 function withQuery(url: string, params: Record<string, string>): string {
-	const sep = url.includes("?") ? "&" : "?";
-	return `${url}${sep}${new URLSearchParams(params).toString()}`;
+	const absolute = /^[a-z][a-z0-9+.-]*:\/\//i.test(url);
+	try {
+		const u = new URL(url, "http://local.invalid");
+		for (const [key, value] of Object.entries(params)) {
+			u.searchParams.set(key, value);
+		}
+		return absolute ? u.toString() : `${u.pathname}${u.search}${u.hash}`;
+	} catch {
+		const sep = url.includes("?") ? "&" : "?";
+		return `${url}${sep}${new URLSearchParams(params).toString()}`;
+	}
 }
 
 /**
