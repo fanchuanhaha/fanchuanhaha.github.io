@@ -779,6 +779,7 @@ async function loadVisit(){
   const sld = $('#visitSiteDaysLabel');
   if(sld) sld.textContent = visitDays;
   loadVisitSites();
+  loadVisitAllowedSites();
 }
 
 // 图表下方汇总：区间总访问量 + 各站点拆分（选中站点时只显示该站点）
@@ -823,7 +824,6 @@ async function loadVisitSites(){
     let h = '<div style="overflow-x:auto"><table class="wk-table"><thead><tr>' +
       '<th>来源站点</th><th style="text-align:right">今日</th><th style="text-align:right">近 '+esc(String(visitDays))+' 天</th>' +
       '<th style="text-align:right">累计</th><th style="text-align:right">区间占比</th><th style="min-width:110px">占比</th>' +
-      '<th style="text-align:right">操作</th>' +
       '</tr></thead><tbody>';
     // 全部站点：点击可取消单个站点的筛选
     h += '<tr class="visit-site-row' + (sel ? '' : ' active') + '" data-site="" onclick="selectVisitSite(this.dataset.site)">' +
@@ -833,7 +833,6 @@ async function loadVisitSites(){
       '<td style="text-align:right">' + (Number(d.totalAll)||0) + '</td>' +
       '<td style="text-align:right">100.0%</td>' +
       '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--accent);width:100%"></div></div></td>' +
-      '<td style="text-align:right"><span style="color:var(--muted)">-</span></td>' +
       '</tr>';
     sites.forEach(s => {
       const p = pct(s.range);
@@ -844,7 +843,6 @@ async function loadVisitSites(){
         '<td style="text-align:right">' + (Number(s.total)||0) + '</td>' +
         '<td style="text-align:right">' + p.toFixed(1) + '%</td>' +
         '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--accent);width:' + Math.min(100,p).toFixed(1) + '%"></div></div></td>' +
-        '<td style="text-align:right"><button class="wk-btn danger sm" data-site="' + esc(s.site) + '" onclick="event.stopPropagation();deleteVisitSite(this.dataset.site)" title="删除该站点历史访问明细，数量归入未分类">删除</button></td>' +
         '</tr>';
     });
     if(d.legacy > 0){
@@ -854,7 +852,6 @@ async function loadVisitSites(){
         '<td style="text-align:right">-</td>' +
         '<td style="text-align:right">' + pct(d.legacy).toFixed(1) + '%</td>' +
         '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--muted);width:' + Math.min(100,pct(d.legacy)).toFixed(1) + '%"></div></div></td>' +
-        '<td style="text-align:right"><span style="color:var(--muted)">-</span></td>' +
         '</tr>';
     }
     h += '</tbody></table></div>';
@@ -872,18 +869,34 @@ function selectVisitSite(site){
   loadVisit();
 }
 
-// 删除某个站点的历史访问明细：只删站点分类明细，总量仍保留 → 自动归入「未分类」
-async function deleteVisitSite(site){
-  const s = String(site || '');
-  if(!s) return;
-  if(!await askConfirm('删除站点「' + s + '」的历史访问明细？\n删除后这部分访问量会归入「未分类」，总访问量保持不变。')) return;
-  const r = await api('/admin/api/visit/site?site=' + encodeURIComponent(s), {method:'DELETE'});
+// 允许显示的域名：读取（正在编辑时不覆盖输入框）
+async function loadVisitAllowedSites(){
+  const ta = $('#visitAllowedSites');
+  if(!ta || document.activeElement === ta) return;
+  try{
+    const r = await api('/admin/api/visit/settings');
+    if(r.ok && r.data && document.activeElement !== ta){
+      ta.value = (r.data.allowed_sites || []).join('\\n');
+    }
+  }catch(e){}
+}
+// 保存允许域名：留空 = 不限制；保存后未列出的域名统一归入「未分类」
+async function saveVisitAllowedSites(){
+  const ta = $('#visitAllowedSites');
+  if(!ta) return;
+  const list = String(ta.value || '').split(/[\\s,，;；]+/).map(s => s.trim()).filter(Boolean);
+  const r = await api('/admin/api/visit/settings', { method:'PUT', body: JSON.stringify({ allowed_sites: list }) });
+  const msg = $('#visitAllowedMsg');
   if(r.ok){
-    if(visitSite === s) visitSite = '';
-    toast('已删除，访问量已归入未分类');
+    ta.value = ((r.data && r.data.allowed_sites) || []).join('\\n');
+    visitSite = '';
+    if(msg){ msg.className='wk-label'; msg.textContent='已保存'; }
+    toast('允许域名已保存');
     loadVisit();
   }else{
-    toast((r.data && r.data.error) || '删除失败', true);
+    const err = (r.data && r.data.error) || '保存失败';
+    if(msg){ msg.className='msg err'; msg.textContent=err; }
+    toast(err, true);
   }
 }
 
@@ -4774,8 +4787,18 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
 
     <div class="wk-card">
       <h3 class="wk-title">来源站点明细（最近 <span id="visitSiteDaysLabel">30</span> 天）</h3>
-      <p class="wk-label" style="margin:0 0 10px">按访问来源域名统计，同一访客同一天在同一站点只计一次；未分类为未区分站点的历史访问量。<b>点击站点行可查看该站点的访问趋势</b>，再点一次恢复全部站点；每行右侧可删除该站点的历史明细（删除后数量归入「未分类」，总访问量不变）。</p>
+      <p class="wk-label" style="margin:0 0 10px">按访问来源域名统计，同一访客同一天在同一站点只计一次；「未分类」包含未区分站点的历史访问量，以及不在下方允许域名列表中的域名。<b>点击站点行可查看该站点的访问趋势</b>，再点一次恢复全部站点。</p>
       <div id="visitSiteList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <div class="wk-card">
+      <h3 class="wk-title">允许显示的域名</h3>
+      <p class="wk-label" style="margin:0 0 10px">每行一个域名（可带 https:// 或路径，会自动取域名并去掉 www.）。只有列表内的来源站点会单独显示，其他域名统一计入「未分类」。<b>留空表示不限制，显示全部域名。</b></p>
+      <textarea class="wk-input" id="visitAllowedSites" rows="5" style="width:100%;resize:vertical;box-sizing:border-box" placeholder="wn5.top&#10;blog.example.com"></textarea>
+      <div class="filters" style="margin-top:10px">
+        <button class="wk-btn sm" onclick="saveVisitAllowedSites()">保存允许域名</button>
+        <span class="wk-label" id="visitAllowedMsg" style="margin:0"></span>
+      </div>
     </div>
   </div>
 
@@ -5216,13 +5239,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
           <li>
             <div>
               <div class="name"><span class="chip">GET</span> /admin/api/visit/sites?days=30</div>
-              <div class="meta">按来源站点明细（需管理员登录）。返回 {ok, days, rangeTotal, legacy, sites:[{site,today,range,total}]}；legacy 为未分类（未区分站点）的历史数量</div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <div class="name"><span class="chip">DELETE</span> /admin/api/visit/site?site=1.com</div>
-              <div class="meta">删除某个站点的历史访问明细（需管理员登录）。只删站点分类明细，总访问量不变，删除的数量会归入 legacy（未分类）</div>
+              <div class="meta">按来源站点明细（需管理员登录）。只返回允许域名列表内的站点；其余域名与历史数据一起计入 legacy（未分类）。返回 {ok, days, rangeTotal, legacy, sites:[{site,today,range,total}]}</div>
             </div>
           </li>
           <li>
@@ -5234,13 +5251,13 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
           <li>
             <div>
               <div class="name"><span class="chip">GET</span> /admin/api/visit/settings</div>
-              <div class="meta">读取数据保留天数（需管理员登录）。返回 {ok, retention_days}</div>
+              <div class="meta">读取访问量设置（需管理员登录）。返回 {ok, retention_days, allowed_sites:[域名...]}</div>
             </div>
           </li>
           <li>
             <div>
               <div class="name"><span class="chip">PUT</span> /admin/api/visit/settings</div>
-              <div class="meta">保存数据保留天数（需管理员登录）。请求体 {"retention_days": 365}，取值 1-3650</div>
+              <div class="meta">保存访问量设置（需管理员登录）。请求体 {"retention_days": 365, "allowed_sites": ["wn5.top"]}，两个字段都可单独传；retention_days 取值 1-3650，allowed_sites 留空数组表示不限制</div>
             </div>
           </li>
         </ul>

@@ -521,6 +521,33 @@ async function visitRetention(db: D1Database): Promise<number> {
   return VISIT_DEFAULT_RETENTION;
 }
 
+// 归一化域名列表（支持数组 / 换行 / 逗号分隔），非法值丢弃、去重
+function normalizeSiteList(raw: unknown): string[] {
+  const arr = Array.isArray(raw)
+    ? raw
+    : String(raw ?? "").split(/[\s,，;；]+/);
+  const out: string[] = [];
+  for (const v of arr) {
+    const s = normalizeSite(String(v ?? ""));
+    if (s && !out.includes(s)) out.push(s);
+    if (out.length >= 50) break;
+  }
+  return out;
+}
+
+// 读取「允许显示」的来源域名列表；为空表示不限制（显示全部域名）
+async function visitAllowedSites(db: D1Database): Promise<string[]> {
+  try {
+    const row = await db
+      .prepare(`SELECT "value" FROM "wl_Settings" WHERE "key"=?1`)
+      .bind("visit_allowed_sites")
+      .first<{ value: string }>();
+    return normalizeSiteList(row?.value ?? "");
+  } catch (e) {
+    return [];
+  }
+}
+
 // 读取今日/总访问量
 async function visitStats(db: D1Database) {
   const day = visitDay();
@@ -571,8 +598,11 @@ async function visitDailyBySite(db: D1Database, days: number) {
     .bind(from)
     .all<{ day: string; site: string; count: number }>();
   const bySite = new Map<string, Map<string, number>>();
+  // 只返回允许列表内的域名，其余域名不参与逐日拆分（汇总仍算在总访问量里）
+  const allowed = await visitAllowedSites(db);
   (rows.results || []).forEach((r) => {
     if (!r.site) return;
+    if (allowed.length && !allowed.includes(r.site)) return;
     let m = bySite.get(r.site);
     if (!m) {
       m = new Map<string, number>();
@@ -687,12 +717,15 @@ async function visitSiteStats(db: D1Database, days: number) {
   ]);
   const totals = new Map<string, number>();
   (totalRows.results || []).forEach((r) => totals.set(r.site, Number(r.total) || 0));
-  const sites = (rangeRows.results || []).map((r) => ({
+  let sites = (rangeRows.results || []).map((r) => ({
     site: r.site,
     today: Number(r.today) || 0,
     range: Number(r.range) || 0,
     total: totals.get(r.site) ?? (Number(r.range) || 0),
   }));
+  // 只展示允许列表内的域名；其余域名不单独展示，统一计入「未分类」
+  const allowed = await visitAllowedSites(db);
+  if (allowed.length) sites = sites.filter((s) => allowed.includes(s.site));
   const known = sites.reduce((a, b) => a + b.range, 0);
   const rangeTotal = Number(dayRow?.range) || 0;
   return {
@@ -1026,56 +1059,61 @@ app.get("/admin/api/visit/sites", async (c) => {
   }
 });
 
-// 删除某个站点的历史访问明细：/admin/api/visit/site?site=1.com
-// 只删站点明细，不动 wl_Visit 总量；这些访问量会在后台自动归入「未分类」，总访问量保持不变。
-app.delete("/admin/api/visit/site", async (c) => {
-  if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
-  const site = normalizeSite(c.req.query("site") || "");
-  if (!site) return json({ error: "站点无效" }, 400);
-  const db = (c.env as Bindings).DB;
-  try {
-    await ensureVisitTables(db);
-    const res = await db.batch([
-      db.prepare(`DELETE FROM "wl_VisitSite" WHERE "site"=?1`).bind(site),
-      db.prepare(`DELETE FROM "wl_VisitVisitorSite" WHERE "site"=?1`).bind(site),
-    ]);
-    const deleted =
-      ((res?.[0]?.meta as { changes?: number } | undefined)?.changes ?? 0);
-    return json({ ok: true, site, deleted });
-  } catch (e) {
-    return json({ ok: false, error: String(e) }, 500);
-  }
-});
-
 // 读取设置：/admin/api/visit/settings
 app.get("/admin/api/visit/settings", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
   const db = (c.env as Bindings).DB;
   try {
     await ensureVisitTables(db);
-    return json({ ok: true, retention_days: await visitRetention(db) });
+    return json({
+      ok: true,
+      retention_days: await visitRetention(db),
+      allowed_sites: await visitAllowedSites(db),
+    });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
   }
 });
 
-// 保存设置：/admin/api/visit/settings（数据保留天数，1-3650）
+// 保存设置：/admin/api/visit/settings
+// body: { retention_days?: 1-3650, allowed_sites?: string[] | string }（字段缺省表示不修改）
 app.put("/admin/api/visit/settings", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
-  const body = (await c.req.json().catch(() => ({}))) as { retention_days?: unknown };
-  const n = parseInt(String(body?.retention_days ?? ""), 10);
-  if (!Number.isFinite(n) || n < 1 || n > 3650) {
-    return json({ error: "retention_days 需为 1-3650 的整数" }, 400);
+  const body = (await c.req.json().catch(() => ({}))) as {
+    retention_days?: unknown;
+    allowed_sites?: unknown;
+  };
+  const hasRetention = body?.retention_days !== undefined;
+  const hasAllowed = body?.allowed_sites !== undefined;
+  if (!hasRetention && !hasAllowed) {
+    return json({ error: "没有需要保存的设置" }, 400);
   }
+  let days: number | null = null;
+  if (hasRetention) {
+    days = parseInt(String(body.retention_days ?? ""), 10);
+    if (!Number.isFinite(days) || days < 1 || days > 3650) {
+      return json({ error: "retention_days 需为 1-3650 的整数" }, 400);
+    }
+  }
+  const allowed = hasAllowed ? normalizeSiteList(body.allowed_sites) : null;
+  const db = (c.env as Bindings).DB;
   try {
-    await ensureVisitTables((c.env as Bindings).DB);
-    await (c.env as Bindings).DB.prepare(
+    await ensureVisitTables(db);
+    const stmt = db.prepare(
       `INSERT INTO "wl_Settings" ("key","value","updatedAt") VALUES (?1,?2,datetime('now'))
        ON CONFLICT("key") DO UPDATE SET "value"=?2, "updatedAt"=datetime('now')`
-    )
-      .bind("visit_retention_days", String(n))
-      .run();
-    return json({ ok: true, retention_days: n });
+    );
+    const tasks: Promise<unknown>[] = [];
+    if (days !== null) tasks.push(stmt.bind("visit_retention_days", String(days)).run());
+    if (allowed !== null) {
+      tasks.push(stmt.bind("visit_allowed_sites", allowed.join("\n")).run());
+    }
+    await Promise.all(tasks);
+    return json({
+      ok: true,
+      retention_days: await visitRetention(db),
+      allowed_sites: await visitAllowedSites(db),
+    });
   } catch (e) {
     return json({ ok: false, error: String(e) }, 500);
   }
