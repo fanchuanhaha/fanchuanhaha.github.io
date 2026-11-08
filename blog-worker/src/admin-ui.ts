@@ -796,7 +796,7 @@ function renderVisitBreakdown(d){
     sites.forEach(s => {
       h += '<span class="vb-chip">' + esc(s.site) + ' <b>' + (Number(s.range)||0) + '</b> 次</span>';
     });
-    if(Number(d.legacy) > 0) h += '<span class="vb-chip">未区分站点 <b>' + (Number(d.legacy)||0) + '</b> 次</span>';
+    if(Number(d.legacy) > 0) h += '<span class="vb-chip">未分类 <b>' + (Number(d.legacy)||0) + '</b> 次</span>';
     if(!sites.length) h += '<span class="vb-chip">暂无站点数据</span>';
   }
   box.innerHTML = h;
@@ -823,6 +823,7 @@ async function loadVisitSites(){
     let h = '<div style="overflow-x:auto"><table class="wk-table"><thead><tr>' +
       '<th>来源站点</th><th style="text-align:right">今日</th><th style="text-align:right">近 '+esc(String(visitDays))+' 天</th>' +
       '<th style="text-align:right">累计</th><th style="text-align:right">区间占比</th><th style="min-width:110px">占比</th>' +
+      '<th style="text-align:right">操作</th>' +
       '</tr></thead><tbody>';
     // 全部站点：点击可取消单个站点的筛选
     h += '<tr class="visit-site-row' + (sel ? '' : ' active') + '" data-site="" onclick="selectVisitSite(this.dataset.site)">' +
@@ -832,6 +833,7 @@ async function loadVisitSites(){
       '<td style="text-align:right">' + (Number(d.totalAll)||0) + '</td>' +
       '<td style="text-align:right">100.0%</td>' +
       '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--accent);width:100%"></div></div></td>' +
+      '<td style="text-align:right"><span style="color:var(--muted)">-</span></td>' +
       '</tr>';
     sites.forEach(s => {
       const p = pct(s.range);
@@ -842,15 +844,17 @@ async function loadVisitSites(){
         '<td style="text-align:right">' + (Number(s.total)||0) + '</td>' +
         '<td style="text-align:right">' + p.toFixed(1) + '%</td>' +
         '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--accent);width:' + Math.min(100,p).toFixed(1) + '%"></div></div></td>' +
+        '<td style="text-align:right"><button class="wk-btn danger sm" data-site="' + esc(s.site) + '" onclick="event.stopPropagation();deleteVisitSite(this.dataset.site)" title="删除该站点历史访问明细，数量归入未分类">删除</button></td>' +
         '</tr>';
     });
     if(d.legacy > 0){
-      h += '<tr><td><span style="color:var(--muted)">未区分站点（历史记录）</span></td>' +
+      h += '<tr><td><span style="color:var(--muted)">未分类</span></td>' +
         '<td style="text-align:right">-</td>' +
         '<td style="text-align:right">' + Number(d.legacy) + '</td>' +
         '<td style="text-align:right">-</td>' +
         '<td style="text-align:right">' + pct(d.legacy).toFixed(1) + '%</td>' +
         '<td><div style="height:6px;border-radius:3px;background:var(--hover)"><div style="height:6px;border-radius:3px;background:var(--muted);width:' + Math.min(100,pct(d.legacy)).toFixed(1) + '%"></div></div></td>' +
+        '<td style="text-align:right"><span style="color:var(--muted)">-</span></td>' +
         '</tr>';
     }
     h += '</tbody></table></div>';
@@ -866,6 +870,21 @@ function selectVisitSite(site){
   const s = String(site || '');
   visitSite = (s && visitSite === s) ? '' : s;
   loadVisit();
+}
+
+// 删除某个站点的历史访问明细：只删站点分类明细，总量仍保留 → 自动归入「未分类」
+async function deleteVisitSite(site){
+  const s = String(site || '');
+  if(!s) return;
+  if(!await askConfirm('删除站点「' + s + '」的历史访问明细？\n删除后这部分访问量会归入「未分类」，总访问量保持不变。')) return;
+  const r = await api('/admin/api/visit/site?site=' + encodeURIComponent(s), {method:'DELETE'});
+  if(r.ok){
+    if(visitSite === s) visitSite = '';
+    toast('已删除，访问量已归入未分类');
+    loadVisit();
+  }else{
+    toast((r.data && r.data.error) || '删除失败', true);
+  }
 }
 
 // 快捷按钮：7/30/90/365
@@ -4755,7 +4774,7 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
 
     <div class="wk-card">
       <h3 class="wk-title">来源站点明细（最近 <span id="visitSiteDaysLabel">30</span> 天）</h3>
-      <p class="wk-label" style="margin:0 0 10px">按访问来源域名统计，同一访客同一天在同一站点只计一次；升级前的历史记录未区分站点，单列显示。<b>点击站点行可查看该站点的访问趋势</b>，再点一次恢复全部站点。</p>
+      <p class="wk-label" style="margin:0 0 10px">按访问来源域名统计，同一访客同一天在同一站点只计一次；未分类为未区分站点的历史访问量。<b>点击站点行可查看该站点的访问趋势</b>，再点一次恢复全部站点；每行右侧可删除该站点的历史明细（删除后数量归入「未分类」，总访问量不变）。</p>
       <div id="visitSiteList"><div class="empty">加载中...</div></div>
     </div>
   </div>
@@ -5197,7 +5216,13 @@ export function renderAdminPage(siteUrl: string, ghRepo?: string, initial = "man
           <li>
             <div>
               <div class="name"><span class="chip">GET</span> /admin/api/visit/sites?days=30</div>
-              <div class="meta">按来源站点明细（需管理员登录）。返回 {ok, days, rangeTotal, legacy, sites:[{site,today,range,total}]}；legacy 为升级前未区分站点的历史数量</div>
+              <div class="meta">按来源站点明细（需管理员登录）。返回 {ok, days, rangeTotal, legacy, sites:[{site,today,range,total}]}；legacy 为未分类（未区分站点）的历史数量</div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <div class="name"><span class="chip">DELETE</span> /admin/api/visit/site?site=1.com</div>
+              <div class="meta">删除某个站点的历史访问明细（需管理员登录）。只删站点分类明细，总访问量不变，删除的数量会归入 legacy（未分类）</div>
             </div>
           </li>
           <li>

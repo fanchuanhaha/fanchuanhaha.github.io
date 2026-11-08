@@ -1026,6 +1026,27 @@ app.get("/admin/api/visit/sites", async (c) => {
   }
 });
 
+// 删除某个站点的历史访问明细：/admin/api/visit/site?site=1.com
+// 只删站点明细，不动 wl_Visit 总量；这些访问量会在后台自动归入「未分类」，总访问量保持不变。
+app.delete("/admin/api/visit/site", async (c) => {
+  if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
+  const site = normalizeSite(c.req.query("site") || "");
+  if (!site) return json({ error: "站点无效" }, 400);
+  const db = (c.env as Bindings).DB;
+  try {
+    await ensureVisitTables(db);
+    const res = await db.batch([
+      db.prepare(`DELETE FROM "wl_VisitSite" WHERE "site"=?1`).bind(site),
+      db.prepare(`DELETE FROM "wl_VisitVisitorSite" WHERE "site"=?1`).bind(site),
+    ]);
+    const deleted =
+      ((res?.[0]?.meta as { changes?: number } | undefined)?.changes ?? 0);
+    return json({ ok: true, site, deleted });
+  } catch (e) {
+    return json({ ok: false, error: String(e) }, 500);
+  }
+});
+
 // 读取设置：/admin/api/visit/settings
 app.get("/admin/api/visit/settings", async (c) => {
   if (!isAdmin(c.get("userInfo"))) return json({ error: "unauthorized" }, 401);
